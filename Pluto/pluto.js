@@ -5,6 +5,7 @@ module.exports = function(app) {
     var cookieParser = require('cookie-parser');
     var bodyParser = require('body-parser');
     var fs = require('fs');
+    var express = require("express");
 
     var pluto = {};
 
@@ -31,9 +32,9 @@ module.exports = function(app) {
 
     pluto.emitEvent = function(event, data) {
         if (listeners[event]) {
-            listeners[event].forEach(function(listener)) {
+            listeners[event].forEach(function(listener) {
                 if (listener) listener(data);
-            }
+            });
         }
     };
 
@@ -102,28 +103,9 @@ module.exports = function(app) {
         next(err);
     });
 
-    // error handlers
-
-    // development error handler
-    // will print stacktrace
-    if (app.get('env') === 'development') {
-        app.use(function(err, req, res, next) {
-            res.status(err.status || 500);
-            res.render('error', {
-                message: err.message,
-                error: err
-            });
-        });
-    }
-
-    // production error handler
-    // no stacktraces leaked to user
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: {}
-        });
+        res.write("error: " + err.message);
     });
 
 
