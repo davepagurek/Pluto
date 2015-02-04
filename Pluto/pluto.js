@@ -10,6 +10,7 @@ module.exports = function(app) {
     var pluto = {};
 
     var sources = [];
+    var modules = [];
     var listeners = {};
 
 
@@ -48,16 +49,22 @@ module.exports = function(app) {
     };
 
     pluto.getStorage = function(filename, callback) {
-        fs.readFile(path.join(__dirname, "storage/", filename+".json"), function(err, data) {
-            if (data) {
-                data = JSON.parse(data);
-            }
-            if (callback) callback(err, data);
+        var file = "./storage/"+filename+".json";
+        fs.exists(file, function(exists) {
+            if (exists) {
+                fs.readFile(file, function(err, data) {
+                    if (err) throw err;
+                    if (data) {
+                        data = JSON.parse(data);
+                    }
+                    if (callback) callback(err, data);
+                });
+            } else if (callback) callback("Does not exist");
         });
     };
 
     pluto.saveStorage = function(filename, data, callback) {
-        fs.writeFile(path.join(__dirname, "storage/", filename+".json"), JSON.stringify(data), callback);
+        fs.writeFile("./storage/"+filename+".json", JSON.stringify(data), callback);
     };
 
 

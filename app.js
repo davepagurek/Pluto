@@ -1,15 +1,21 @@
 var express = require('express');
 
 
-var app = express();
+var pluto = require("./Pluto/pluto.js")(express());
 
-var pluto = require("./Pluto/pluto.js")();
-
+/*
+ * users.js:
+ * Keeps track of if users are IN or OUT by.
+ * listening for GET requests to /user/<userid>/<in:out>
+ */
 pluto.addSource(require("./plugins/users.js")(pluto));
 
-app.use("/", pluto.router);
+/*
+ * welcome.js:
+ * Outputs "Hello, <username>!" in the console
+ * when a new user enters
+ */
+pluto.addModule(require("./plugins/welcome.js")(pluto));
 
-app.listen(3000);
+pluto.listen(3000);
 
-
-module.exports = app;
