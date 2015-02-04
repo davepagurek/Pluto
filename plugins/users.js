@@ -1,4 +1,4 @@
-module.exports = function(app, pluto) {
+module.exports = function(pluto) {
     var usersModule = {};
 
     var data = {};
@@ -7,24 +7,34 @@ module.exports = function(app, pluto) {
         if (response) data = response;
     });
 
-    app.post("/users/:userid/in", function(req, res) {
+    pluto.get("/test", function(req, res) {
+        res.send("test");
+    });
+
+    pluto.get("/users/:userid/in", function(req, res) {
         var userid = req.params.userid;
         res.send(userid + " signed in!");
         if (!data[userid]) {
             data[userid] = {};
         }
         data[userid].in = true;
-        pluto.saveStorage(data);
+        pluto.saveStorage("users", data, function(err) {
+            if (err) throw err;
+            console.log("saved");
+        });
     });
 
-    app.post("/users/:userid/out", function(req, res) {
+    pluto.get("/users/:userid/out", function(req, res) {
         var userid = req.params.userid;
         res.send(userid + " signed out!");
         if (!data[userid]) {
             data[userid] = {};
         }
         data[userid].in = false;
-        pluto.saveStorage(data);
+        pluto.saveStorage("users", data, function(err) {
+            if (err) throw err;
+            console.log("saved");
+        });
     });
 
     return usersModule;

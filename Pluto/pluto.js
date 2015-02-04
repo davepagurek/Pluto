@@ -13,6 +13,15 @@ module.exports = function(app) {
     var listeners = {};
 
 
+
+    pluto.router = express.Router();
+
+    //Map requests to router
+    pluto.get = function() {
+        pluto.router.get.apply(pluto.router, arguments);
+    };
+
+
     var addListener = function(event, callback) {
         if (!listeners[event]) {
             listeners[event] = [];
@@ -20,7 +29,7 @@ module.exports = function(app) {
         listeners[event].push(callback);
     };
 
-    removeListener = function(event, callback) {
+    var removeListener = function(event, callback) {
         if (listeners[event]) {
 
             //Remove listener from array
@@ -39,7 +48,7 @@ module.exports = function(app) {
     };
 
     pluto.getStorage = function(filename, callback) {
-        fs.readFile("storage/"+filename+".json", function(err, data) {
+        fs.readFile(path.join(__dirname, "storage/", filename+".json"), function(err, data) {
             if (data) {
                 data = JSON.parse(data);
             }
@@ -48,7 +57,7 @@ module.exports = function(app) {
     };
 
     pluto.saveStorage = function(filename, data, callback) {
-        fs.writeFile("storage/"+filename+".json", JSON.parse(data), callback);
+        fs.writeFile(path.join(__dirname, "storage/", filename+".json"), JSON.stringify(data), callback);
     };
 
 
@@ -85,28 +94,32 @@ module.exports = function(app) {
 
 
 
-    // view engine setup
-    app.set('views', path.join(__dirname, 'views'));
-    app.set('view engine', 'jade');
+    //This function should be called AFTER adding sources so that other listeners
+    //take precedence over the error listeners
+    pluto.listen = function(port) {
+        //pluto.router.use(favicon(__dirname + '/public/favicon.ico'));
+        pluto.router.use(logger('dev'));
+        pluto.router.use(bodyParser.json());
+        pluto.router.use(bodyParser.urlencoded({ extended: false }));
+        pluto.router.use(cookieParser());
+        pluto.router.use(express.static(path.join(__dirname, 'public')));
 
-    //app.use(favicon(__dirname + '/public/favicon.ico'));
-    app.use(logger('dev'));
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieParser());
-    app.use(express.static(path.join(__dirname, 'public')));
+        // catch 404 and forward to error handler
+        pluto.router.use(function(req, res, next) {
+            var err = new Error('Not Found');
+            err.status = 404;
+            next(err);
+        });
 
-    // catch 404 and forward to error handler
-    app.use(function(req, res, next) {
-        var err = new Error('Not Found');
-        err.status = 404;
-        next(err);
-    });
+        pluto.router.use(function(err, req, res, next) {
+            res.status(err.status || 500);
+            res.write("error: " + err.message);
+        });
 
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.write("error: " + err.message);
-    });
+        app.use("/", pluto.router);
+        app.listen(port);
+
+    };
 
 
     return pluto;
