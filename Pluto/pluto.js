@@ -1,6 +1,6 @@
 module.exports = function() {
     var path = require('path');
-    var favicon = require('serve-favicon');
+    //var favicon = require('serve-favicon');
     var logger = require('morgan');
     var cookieParser = require('cookie-parser');
     var bodyParser = require('body-parser');
@@ -22,6 +22,10 @@ module.exports = function() {
     pluto.get = function() {
         pluto.router.get.apply(pluto.router, arguments);
     };
+    pluto.post = function() {
+        pluto.router.post.apply(pluto.router, arguments);
+    };
+
 
 
     var addListener = function(event, callback) {
@@ -65,6 +69,7 @@ module.exports = function() {
     };
 
     pluto.saveStorage = function(filename, data, callback) {
+        if (!callback) callback = function() {}; //noop
         fs.writeFile("./storage/"+filename+".json", JSON.stringify(data), callback);
     };
 
@@ -106,11 +111,11 @@ module.exports = function() {
     //take precedence over the error listeners
     pluto.listen = function(port) {
         //pluto.router.use(favicon(__dirname + '/public/favicon.ico'));
-        pluto.router.use(logger('dev'));
-        pluto.router.use(bodyParser.json());
-        pluto.router.use(bodyParser.urlencoded({ extended: false }));
-        pluto.router.use(cookieParser());
-        pluto.router.use(express.static(path.join(__dirname, 'public')));
+        app.use(logger('dev'));
+        app.use(bodyParser.json());
+        app.use(bodyParser.urlencoded({ extended: false }));
+        app.use(cookieParser());
+        app.use(express.static(path.join(__dirname, 'public')));
 
         // catch 404 and forward to error handler
         pluto.router.use(function(req, res, next) {
@@ -121,7 +126,7 @@ module.exports = function() {
 
         pluto.router.use(function(err, req, res, next) {
             res.status(err.status || 500);
-            res.write("error: " + err.message);
+            res.send("error: " + err.message);
         });
 
         app.use("/", pluto.router);
