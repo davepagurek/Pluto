@@ -1,7 +1,4 @@
-var express = require('express');
-
-
-var pluto = require("./Pluto/pluto.js")(express());
+var pluto = require("./Pluto/pluto.js")();
 
 /*
  * users.js:

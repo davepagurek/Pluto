@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = function() {
     var path = require('path');
     var favicon = require('serve-favicon');
     var logger = require('morgan');
@@ -6,6 +6,7 @@ module.exports = function(app) {
     var bodyParser = require('body-parser');
     var fs = require('fs');
     var express = require("express");
+    var app = express();
 
     var pluto = {};
 
