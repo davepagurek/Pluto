@@ -106,6 +106,7 @@ module.exports = function(pluto) {
 
     pluto.get("/users/:userid/in", function(req, res) {
         var userid = req.params.userid;
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         if (data[userid]) {
             data[userid].in = true;
