@@ -64,3 +64,11 @@ module.exports = function(pluto) {
     return module;
 }
 ```
+
+<h2>Dependencies</h2>
+Text-to-speech requires Festival to work. On linux, run:
+```
+apt-get isntall festival
+```
+
+On windows, download and install the binaries from http://downloads.sourceforge.net/e-guidedog/festival-2.1.1-win.7z specifically to the directory `C:\festival` and then add `C:\festival\bin` to your $PATH.
