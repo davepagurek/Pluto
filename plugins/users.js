@@ -2,6 +2,7 @@ module.exports = function(pluto) {
     var usersModule = {};
 
     var data = {};
+    var listening = 0;
 
 
     pluto.getStorage("users", function(error, response) {
@@ -23,67 +24,60 @@ module.exports = function(pluto) {
     });
 
     pluto.post("/users/add", function(req, res) {
-        var id = req.body.id;
         var name = req.body.name;
 
-        if (!data[id]) {
-            data[id] = {
-                "id": id,
+        if (!listening) {
+            listening = {
+                "ip": 0,
                 "name": name
             };
-            pluto.saveStorage("users", data);
-            res.send("User " + id + " added.");
+            res.send("User " + name + " added. Make the user go to <strong>/users/io</strong> to register an IP.");
+        } else {
+            res.send("Can't add a new user yet, we're waiting for " + listening.name + " to register their IP!");
         }
-        res.send("User " + id + " already exists.");
     });
 
     pluto.post("/users/change", function(req, res) {
-        var id = req.body.id;
+        var ip = req.body.ip;
         var name = req.body.name;
         var del = req.body.delete;
 
-        if (data[id]) {
+        if (data[ip]) {
             if (del) {
-                delete data[id];
-                res.send("User " + id + " deleted.");
+                delete data[ip];
+                res.send("User deleted.");
             } else {
-                if (name) data[id].name = name;
-                res.send("User " + id + " changed.");
+                if (name) data[ip].name = name;
+                res.send("User changed.");
             }
             pluto.saveStorage("users", data);
-            res.send("User " + id + " added.");
+        } else {
+            res.send("User does not exist.");
         }
-        res.send("User " + id + " does not exist.");
     });
 
-    pluto.get("/users/:userid/in", function(req, res) {
-        var userid = req.params.userid;
+    pluto.get("/users/io", function(req, res) {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-        if (data[userid]) {
-            data[userid].in = true;
+        if (listening) {
+            listening.ip = ip;
+            data[ip] = listening;
+            listening = 0;
 
-            pluto.emitEvent("users::signin", data[userid]);
-
-            pluto.saveStorage("users", data);
-
-            res.send(userid + " signed in!");
-        } else {
-            res.send(userid + " does not exist.");
-        }
-    });
-
-    pluto.get("/users/:userid/out", function(req, res) {
-        var userid = req.params.userid;
-
-        if (data[userid]) {
-            data[userid].in = false;
-
-            pluto.emitEvent("users::signout", data[userid]);
+            pluto.emitEvent("users::register", data[ip]);
 
             pluto.saveStorage("users", data);
 
-            res.send(userid + " signed out!");
+            res.send(data[ip].name + " registered!");
+
+        } else if (data[ip]) {
+            data[ip].in = !data[ip].in;
+
+            pluto.emitEvent("users::signin", data[ip]);
+
+            pluto.saveStorage("users", data);
+
+            res.send(userid + " signed " + (data[ip]?"in":"out") + "!");
         } else {
             res.send(userid + " does not exist.");
         }
