@@ -4,9 +4,10 @@
         <link rel='stylesheet' type='text/css' href='/stylesheets/users.css' />
     </head>
     <body>
+        <div class="header">
+            <h1>Manage Users</h1>
+        </div>
         <div class='container'>
-            <h1>Users</h1>
-
             <h2>Existing Users</h2>
             {{#each users}}
             <form method='post' action='/users/change'>
