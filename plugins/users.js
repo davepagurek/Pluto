@@ -3,22 +3,6 @@ module.exports = function(pluto) {
 
     var data = {};
 
-    var header = function() {
-        return "<html>\
-            <body>\
-            <head>\
-            <title>Users</title>\
-            <link rel='stylesheet' type='text/css' href='/stylesheets/users.css' />\
-            </head>\
-            <body>\
-            <div class='container'>";
-    };
-
-    var footer = function() {
-        return "</div>\
-            </body>\
-            </html>";
-    }
 
     pluto.getStorage("users", function(error, response) {
         if (response) data = response;
@@ -29,45 +13,13 @@ module.exports = function(pluto) {
     });
 
     pluto.get("/users", function(req, res) {
-        var types = {
-
-        }
-
-        var content = header() +
-            "<h1>Users</h1>\
-            <h2>Existing Users</h2>";
-
+        var users = [];
         for (var user in data) {
-            content += "<form method='post' action='/users/change'>";
-            content += "<h3>" + user + "</h3>\
-                <input type='hidden' name='id' value='" + user + "' />";
-            content += "<div class='value'>\
-                <label>name</label>\
-                <input name='name' type='text' value='" + data[user].name + "' />\
-                </div>\
-                <div class='value'>\
-                <label>Delete</label>\
-                <input name='delete' type='checkbox' />\
-                </div>\
-                <input type='submit' value='Change' />\
-                </form>";
+            users.push(data[user]);
         }
-
-        content += "<h2>Register new user</h2>\
-            <form method='post' action='/users/add'>\
-            <div class='value'>\
-            <label>ID</label>\
-            <input name='id' type='text' />\
-            </div>\
-            <div class='value'>\
-            <label>Name</label>\
-            <input name='name' type='text' />\
-            </div>\
-            <input type='submit' value='Add' />\
-            </form>";
-
-        content += footer();
-        res.send(content);
+        res.render("users-manage.html", {
+            "users": users
+        });
     });
 
     pluto.post("/users/add", function(req, res) {

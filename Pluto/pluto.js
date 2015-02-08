@@ -6,6 +6,7 @@ module.exports = function() {
     var bodyParser = require('body-parser');
     var fs = require('fs');
     var express = require("express");
+    var exphbs = require('express-handlebars');
     var app = express();
 
     var pluto = {};
@@ -17,6 +18,15 @@ module.exports = function() {
 
 
     pluto.router = express.Router();
+    app.set('views', path.join(__dirname, "../views"))
+    app.engine('.html', exphbs({
+        defaultLayout: 'main',
+        extname: ".html",
+        layoutsDir: path.join(__dirname, "../views/layouts"),
+        partialsDir: path.join(__dirname, "../views/partials")
+    }));
+    app.set('view engine', 'handlebars');
+
 
     //Map requests to router
     pluto.get = function() {
@@ -115,7 +125,7 @@ module.exports = function() {
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(cookieParser());
-        app.use(express.static(path.join(__dirname, 'public')));
+        app.use(express.static('../public'));
 
         // catch 404 and forward to error handler
         pluto.router.use(function(req, res, next) {
