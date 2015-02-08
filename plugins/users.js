@@ -73,13 +73,13 @@ module.exports = function(pluto) {
         } else if (data[ip]) {
             data[ip].in = !data[ip].in;
 
-            pluto.emitEvent("users::signin", data[ip]);
+            pluto.emitEvent("users::sign" + (data[ip].in?"in":"out"), data[ip]);
 
             pluto.saveStorage("users", data);
 
-            res.send(userid + " signed " + (data[ip]?"in":"out") + "!");
+            res.send(data[ip].name + " signed " + (data[ip].in?"in":"out") + "!");
         } else {
-            res.send(userid + " does not exist.");
+            res.send("User does not exist.");
         }
     });
 
