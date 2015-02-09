@@ -11,7 +11,8 @@ module.exports = function(pluto) {
             } else {
                 request("http://www.davepagurek.com/badjokes/joke").then(function(res) {
                     joke = JSON.parse(res.body);
-                    exec('echo "Hello, ' + user.name + '. ' + joke.q + ' ' + joke.a + '" | festival --tts');
+                    exec('echo "Hello, ' + user.name + '. ' + joke.q + '" | festival --tts');
+                    exec('echo "' + joke.a + '" | festival --tts');
                 });
             }
         },
