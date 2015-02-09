@@ -1,5 +1,5 @@
 <h1>Pluto</h1>
-![Pluto](https://raw.githubusercontent.com/pahgawk/Pluto/master/public/images/pluto-small.png)
+![Pluto](https://raw.githubusercontent.com/pahgawk/Pluto/a826a991dda8d84eaa80be1155b0f0f6b685e851/public/images/pluto-small.png)
 
 A home automation framework
 
