@@ -8,7 +8,10 @@ module.exports = function(pluto) {
         "users::signin": function(user) {
             if (user.name == "Andrew") {
                 exec('echo "Hello, ' + user.name + '. Once you start Russian, there\'s no time for Stalin." | festival --tts');
+            }else if (user.name=="Dave"){
+                exec ('echo "I\'m sorry Dave, I\'m afraid I can\'t let you do that!" | festival --tts');
             } else {
+
                 request("http://www.davepagurek.com/badjokes/joke").then(function(res) {
                     joke = JSON.parse(res.body);
                     exec('echo "Hello, ' + user.name + '. ' + joke.q + ' ' + joke.a + '" | festival --tts');
