@@ -12,6 +12,8 @@ module.exports = function(pluto) {
                 exec ('echo "I\'m sorry Dave, I\'m afraid I can\'t let you do that!" | festival --tts');
             }else if (user.name=="Ruo Tai"){
                 exec ('echo "Hello Ruo Tai, please check twice before you commit. OH YEAH!"| festival --tts');
+            }else if (user.name=="Yu Chen"){
+                exec ('echo "Hola, Yu Chen. Did you know that there are more than 1000 species of Cats around the world. MeeeWow!" | festival --tts');
             } else {
 
                 request("http://www.davepagurek.com/badjokes/joke").then(function(res) {
