@@ -1,5 +1,6 @@
 <h1>Pluto</h1>
 A home automation framework
+![Pluto](https://raw.githubusercontent.com/pahgawk/Pluto/master/public/images/pluto.png)
 
 <h2>Structure</h2>
 In `app.js`, new modules and sources are added like this:
