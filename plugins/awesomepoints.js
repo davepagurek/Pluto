@@ -2,30 +2,41 @@ module.exports = function(pluto) {
     require("shelljs/global");
     require('es6-promise').polyfill();
     var request = require('popsicle');
-    var welcomeModule = {};
+    var pointsModule = {};
+    var data = pluto.getStorage("users");
 
     pluto.get("/score", function(req, res) {
         res.send("Everyone's a winner (unimplemented feature)");
     });
+    pluto.get("/score/:user", function(req, res) {
+        var user = req.body.user;
+        var points = data[user.ip].points;
+        if(points)
+            res.send(points);
+        else
+            res.send("0");
+    });
 
-    welcomeModule.listeners = {
-        "users::signin": function(user) {
-            if (user.name == "Andrew") {
-                exec('echo "Hello, ' + user.name + '. Once you start Russian, there\'s no time for Stalin." | festival --tts');
-            } else {
-                request("http://www.davepagurek.com/badjokes/joke").then(function(res) {
-                    joke = JSON.parse(res.body);
-                    exec('echo "Hello, ' + user.name + '. ' + joke.q + ' ' + joke.a + '" | festival --tts');
-                });
-            }
+    pointsModule.listeners = {
+        "points::awardTo": function(user,increment) {
+        if (data[user.ip]) {
+            if(data[user.ip].points)
+                data[user.ip].points += increment;
+            else
+                data[user.ip].points = increment;
+
+            pluto.saveStorage("users", data, function() {
+                //saved!
+                pluto.emitEvent("users::updated");
+            });
+        } else {
+            console.log("Error awarding points")
+        }
         },
-        "users::signout": function(user) {
-            exec('echo "Goodbye, ' + user.name + '" | festival --tts');
-        },
-        "users::register": function(user) {
-            exec('echo "Hello, ' + user.name + '. Nice to meet you." | festival --tts');
+        "points::revokeFrom": function(user) {
+            //TODO implement
         }
     };
 
-    return welcomeModule;
+    return pointsModule;
 }
