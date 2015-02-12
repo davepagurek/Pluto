@@ -20,6 +20,12 @@ pluto.addModule(require("./plugins/welcome.js")(pluto));
  */
 pluto.addModule(require("./plugins/awesomepoints.js")(pluto));
 
+/*
+ * github.js
+ * Gives out awesomepoints for GitHub streaks
+ */
+pluto.addModule(require("./plugins/github.js")(pluto));
+
 
 pluto.listen(3000);
 

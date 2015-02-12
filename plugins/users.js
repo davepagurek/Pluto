@@ -44,6 +44,7 @@ module.exports = function(pluto) {
         var ip = req.body.ip;
         var name = req.body.name;
         var del = req.body.delete;
+        var github = req.body.github;
 
         if (data[ip]) {
             if (del) {

@@ -13,6 +13,7 @@ module.exports = function() {
 
     var sources = [];
     var modules = [];
+    var schedules = [];
     var storage = {};
     var listeners = {};
 
@@ -63,6 +64,11 @@ module.exports = function() {
                 if (listener) listener.apply(this, Array.prototype.slice.call(args, 1));
             });
         }
+    };
+
+    pluto.schedule = function(hours, callback) {
+        callback();
+        schedules.push(setInterval(callback, hours*60*60*1000));
     };
 
     pluto.getStorage = function(filename, callback) {

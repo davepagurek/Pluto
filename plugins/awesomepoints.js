@@ -17,7 +17,7 @@ module.exports = function(pluto) {
         console.log(req.params.user, user);
         var points = data[user].points;
         if(points)
-            res.send(points);
+            res.send(data[user].name + " has " + points + " points!");
         else
             res.send("0");
     });
