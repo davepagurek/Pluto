@@ -13,6 +13,7 @@ module.exports = function() {
 
     var sources = [];
     var modules = [];
+    var storage = {};
     var listeners = {};
 
 
@@ -56,26 +57,31 @@ module.exports = function() {
     };
 
     pluto.emitEvent = function(event, data) {
+        var args = arguments;
         if (listeners[event]) {
             listeners[event].forEach(function(listener) {
-                if (listener) listener(data);
+                if (listener) listener.apply(this, Array.prototype.slice.call(args, 1));
             });
         }
     };
 
     pluto.getStorage = function(filename, callback) {
-        var file = "./storage/"+filename+".json";
-        fs.exists(file, function(exists) {
-            if (exists) {
-                fs.readFile(file, function(err, data) {
-                    if (err) throw err;
-                    if (data) {
-                        data = JSON.parse(data);
-                    }
-                    if (callback) callback(err, data);
-                });
-            } else if (callback) callback("Does not exist");
-        });
+        if (storage[filename]) {
+            if (callback) callback(null, storage[filename]);
+        } else {
+            var file = "./storage/"+filename+".json";
+            fs.exists(file, function(exists) {
+                if (exists) {
+                    fs.readFile(file, function(err, data) {
+                        if (err) throw err;
+                        if (data) {
+                            storage[filename] = JSON.parse(data);
+                        }
+                        if (callback) callback(err, storage[filename]);
+                    });
+                } else if (callback) callback("Does not exist");
+            });
+        }
     };
 
     pluto.saveStorage = function(filename, data, callback) {

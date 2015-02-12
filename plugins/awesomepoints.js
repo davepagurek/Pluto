@@ -10,7 +10,7 @@ module.exports = function(pluto) {
     });
     pluto.get("/score/:user", function(req, res) {
         var user = req.body.user;
-        var points = data[user.ip].points;
+        var points = data[user].points;
         if(points)
             res.send(points);
         else
@@ -19,19 +19,19 @@ module.exports = function(pluto) {
 
     pointsModule.listeners = {
         "points::awardTo": function(user,increment) {
-        if (data[user.ip]) {
-            if(data[user.ip].points)
-                data[user.ip].points += increment;
-            else
-                data[user.ip].points = increment;
+            if (data[user.ip]) {
+                if(data[user.ip].points)
+                    data[user.ip].points += increment;
+                else
+                    data[user.ip].points = increment;
 
-            pluto.saveStorage("users", data, function() {
-                //saved!
-                pluto.emitEvent("users::updated");
-            });
-        } else {
-            console.log("Error awarding points")
-        }
+                pluto.saveStorage("users", data, function() {
+                    //saved!
+                    pluto.emitEvent("users::updated");
+                });
+            } else {
+                console.log("Error awarding points")
+            }
         },
         "points::revokeFrom": function(user) {
             //TODO implement

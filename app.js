@@ -14,5 +14,12 @@ pluto.addSource(require("./plugins/users.js")(pluto));
  */
 pluto.addModule(require("./plugins/welcome.js")(pluto));
 
+/*
+ * awesomepoints.js
+ * Keeps track of how many awesomepoints people have
+ */
+pluto.addModule(require("./plugins/awesomepoints.js")(pluto));
+
+
 pluto.listen(3000);
 
