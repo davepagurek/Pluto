@@ -17,6 +17,7 @@ module.exports = function(pluto) {
         var users = [];
         for (var user in data) {
             users.push(data[user]);
+            users[users.length-1].encodedIP = encodeURIComponent(users[users.length-1].ip);
         }
         res.render("users-manage.html", {
             "users": users
@@ -25,11 +26,13 @@ module.exports = function(pluto) {
 
     pluto.post("/users/add", function(req, res) {
         var name = req.body.name;
+        var github = req.body.github;
 
         if (!listening) {
             listening = {
                 "ip": 0,
-                "name": name
+                "name": name,
+                "github": github
             };
             res.send("User " + name + " added. Make the user go to <strong>/users/io</strong> to register an IP.");
         } else {
@@ -48,6 +51,7 @@ module.exports = function(pluto) {
                 res.send("User deleted.");
             } else {
                 if (name) data[ip].name = name;
+                if (github) data[ip].github = github;
                 res.send("User changed.");
             }
             pluto.saveStorage("users", data);

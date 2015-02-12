@@ -3,13 +3,18 @@ module.exports = function(pluto) {
     require('es6-promise').polyfill();
     var request = require('popsicle');
     var pointsModule = {};
-    var data = pluto.getStorage("users");
+    var data = {};
+    pluto.getStorage("users", function(error, response) {
+        if (response) data = response;
+    });
+
 
     pluto.get("/score", function(req, res) {
         res.send("Everyone's a winner (unimplemented feature)");
     });
     pluto.get("/score/:user", function(req, res) {
-        var user = req.body.user;
+        var user = decodeURIComponent(req.params.user);
+        console.log(req.params.user, user);
         var points = data[user].points;
         if(points)
             res.send(points);

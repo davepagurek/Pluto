@@ -21,10 +21,15 @@
                     <input name='name' type='text' value='{{name}}' />
                 </div>
                 <div class='value'>
+                    <label>Github Username</label>
+                    <input name='github' type='text' value='{{github}}' />
+                </div>
+                <div class='value'>
                     <label>Delete</label>
                     <input name='delete' type='checkbox' />
                 </div>
                 <input type='submit' value='Change' />
+                <a href="/score/{{encodedIP}}">View AwesomePoints score</a>
             </form>
             {{/each}}
 
