@@ -7,17 +7,16 @@ module.exports = function() {
     var fs = require('fs');
     var express = require("express");
     var exphbs = require('express-handlebars');
+    require('es6-promise').polyfill();
     var app = express();
 
     var pluto = {};
 
-    var sources = [];
-    var modules = [];
-    var schedules = [];
-    var storage = {};
-    var listeners = {};
-
-
+    pluto.sources = [];
+    pluto.modules = [];
+    pluto.schedules = [];
+    pluto.storage = {};
+    pluto.listeners = {};
 
     pluto.router = express.Router();
     app.set('views', path.join(__dirname, "../views"))
@@ -41,17 +40,17 @@ module.exports = function() {
 
 
     var addListener = function(event, callback) {
-        if (!listeners[event]) {
-            listeners[event] = [];
+        if (!pluto.listeners[event]) {
+            pluto.listeners[event] = [];
         }
-        listeners[event].push(callback);
+        pluto.listeners[event].push(callback);
     };
 
     var removeListener = function(event, callback) {
-        if (listeners[event]) {
+        if (pluto.listeners[event]) {
 
             //Remove listener from array
-            listeners[event] = listeners[event].filter(function(element) {
+            pluto.listeners[event] = pluto.listeners[event].filter(function(element) {
                 return (element != callback);
             });
         }
@@ -59,8 +58,8 @@ module.exports = function() {
 
     pluto.emitEvent = function(event, data) {
         var args = arguments;
-        if (listeners[event]) {
-            listeners[event].forEach(function(listener) {
+        if (pluto.listeners[event]) {
+            pluto.listeners[event].forEach(function(listener) {
                 if (listener) listener.apply(this, Array.prototype.slice.call(args, 1));
             });
         }
@@ -68,25 +67,25 @@ module.exports = function() {
 
     pluto.schedule = function(hours, callback) {
         callback();
-        schedules.push(setInterval(callback, hours*60*60*1000));
+        pluto.schedules.push(setInterval(callback, hours*60*60*1000));
     };
 
-    pluto.getStorage = function(filename, callback) {
-        if (storage[filename]) {
-            if (callback) callback(null, storage[filename]);
+    pluto.getStorage = function(filename) {
+        if (pluto.storage[filename]) {
+            return pluto.storage[filename];
         } else {
             var file = "./storage/"+filename+".json";
-            fs.exists(file, function(exists) {
-                if (exists) {
-                    fs.readFile(file, function(err, data) {
-                        if (err) throw err;
-                        if (data) {
-                            storage[filename] = JSON.parse(data);
-                        }
-                        if (callback) callback(err, storage[filename]);
-                    });
-                } else if (callback) callback("Does not exist");
-            });
+            if (fs.existsSync(file)) {
+                var content = fs.readFileSync(file, "utf-8");
+                if (content) {
+                    pluto.storage[filename] = JSON.parse(content);
+                    return pluto.storage[filename];
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         }
     };
 
@@ -98,17 +97,17 @@ module.exports = function() {
 
 
     pluto.addSource = function(source) {
-        sources.push(source);
+        pluto.sources.push(source);
     };
 
     pluto.removeSource = function(source) {
-        sources = sources.map(function(element) {
+        pluto.sources = pluto.sources.map(function(element) {
             return (element != source);
         });
     };
 
     pluto.addModule = function(module) {
-        modules.push(module);
+        pluto.modules.push(module);
         if (module.listeners) {
             for (var event in module.listeners) {
                 addListener(event, module.listeners[event]);
@@ -117,12 +116,12 @@ module.exports = function() {
     };
 
     pluto.removeModule = function(module) {
-        if (module.listeners) {
-            for (var event in module.listeners) {
-                removeListener(event, module.listeners[event]);
+        if (module.pluto.listeners) {
+            for (var event in module.pluto.listeners) {
+                removeListener(event, module.pluto.listeners[event]);
             }
         }
-        modules = modules.map(function(element) {
+        pluto.modules = pluto.modules.map(function(element) {
             return (element != module);
         });
     };

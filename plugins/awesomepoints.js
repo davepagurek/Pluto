@@ -3,10 +3,8 @@ module.exports = function(pluto) {
     require('es6-promise').polyfill();
     var request = require('popsicle');
     var pointsModule = {};
-    var data = {};
-    pluto.getStorage("users", function(error, response) {
-        if (response) data = response;
-    });
+    var data = pluto.getStorage("users")||{};
+
 
 
     pluto.get("/score", function(req, res) {

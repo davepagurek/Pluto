@@ -1,13 +1,9 @@
 module.exports = function(pluto) {
     var usersModule = {};
 
-    var data = {};
+    var data = pluto.getStorage("users")||{};
     var listening = 0;
 
-
-    pluto.getStorage("users", function(error, response) {
-        if (response) data = response;
-    });
 
     pluto.get("/users/all", function(req, res) {
        res.send(data);
@@ -27,12 +23,15 @@ module.exports = function(pluto) {
     pluto.post("/users/add", function(req, res) {
         var name = req.body.name;
         var github = req.body.github;
+        var artists = req.body.artists || "";
+
 
         if (!listening) {
             listening = {
                 "ip": 0,
                 "name": name,
-                "github": github
+                "github": github,
+                "artists": artists.split(",")
             };
             res.send("User " + name + " added. Make the user go to <strong>/users/io</strong> to register an IP.");
         } else {
@@ -45,6 +44,7 @@ module.exports = function(pluto) {
         var name = req.body.name;
         var del = req.body.delete;
         var github = req.body.github;
+        var artists = req.body.artists;
 
         if (data[ip]) {
             if (del) {
@@ -53,6 +53,7 @@ module.exports = function(pluto) {
             } else {
                 if (name) data[ip].name = name;
                 if (github) data[ip].github = github;
+                if (artists) data[ip].artists = artists.split(",");
                 res.send("User changed.");
             }
             pluto.saveStorage("users", data);

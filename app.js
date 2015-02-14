@@ -26,6 +26,12 @@ pluto.addModule(require("./plugins/awesomepoints.js")(pluto));
  */
 pluto.addModule(require("./plugins/github.js")(pluto));
 
+/*
+ * music.js
+ * Makes a playlist based on user recommended artists
+ */
+pluto.addModule(require("./plugins/music.js")(pluto));
+
 
 pluto.listen(3000);
 
