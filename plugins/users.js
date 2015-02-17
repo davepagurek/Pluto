@@ -77,7 +77,7 @@ module.exports = function(pluto) {
             res.send(data[ip].name + " registered!");
 
         } else if (data[ip]) {
-            data[ip].in = !data[ip].in;
+            data[ip].in = (data[ip].in?false:true);
 
             pluto.emitEvent("users::sign" + (data[ip].in?"in":"out"), data[ip]);
 

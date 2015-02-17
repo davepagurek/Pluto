@@ -1,1 +1,1 @@
-{"::1":{"ip":"::1","name":"Dave","in":true,"points":46,"github":"pahgawk","encodedIP":"%3A%3A1","artists":["Arcade Fire","The Beatles","Barenaked Ladies","George Barnett","Saint Motel"]}}
+{"::1":{"ip":"::1","name":"Dave","github":"pahgawk","artists":["Arcade Fire","The Beatles","Barenaked Ladies","George Barnett","Saint Motel"],"encodedIP":"%3A%3A1","in":true},"::ffff:192.168.1.145":{"ip":"::ffff:192.168.1.145","name":"Yu Chen","github":"icechen1","artists":["Arcade Fire"]}}
