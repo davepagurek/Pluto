@@ -91,3 +91,12 @@ input[type="button"]:hover, input[type="submit"]:hover {
     background-color:#5C6BC0;
 }
 
+
+.icon {
+    width:100px;
+    height:100px;
+    display:inline-block;
+    background-size:cover;
+    background-position:center;
+    background-image:url(../images/shitty-yuchen.png);
+}

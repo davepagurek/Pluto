@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Pluto</title>
+        <link rel="stylesheet" type="text/css" href="stylesheets/display.css" />
+        <script type="text/javascript" src="javascripts"></script>
+    </head>
+    <body>
+        {{#each users}}
+        <div class="user{{#in}} in{{/in}}">
+            <div class="column">
+                <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
+                <h3>{{#points}}{{.}}{{/points}}{{^points}}0{{/points}} &#9731;</h3>
+            </div>
+            <div class="column info">
+                <h2>{{name}}</h2>
+                <p>{{#in}}In{{/in}}{{^in}}Out of{{/in}} the house</p>
+            </div>
+        </div>
+        {{/each}}
+    </body>
+</html>

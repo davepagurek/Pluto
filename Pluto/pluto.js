@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function(tests) {
     var path = require('path');
     //var favicon = require('serve-favicon');
     var logger = require('morgan');
@@ -7,6 +7,7 @@ module.exports = function() {
     var fs = require('fs');
     var express = require("express");
     var exphbs = require('express-handlebars');
+    var multer  = require('multer');
     require('es6-promise').polyfill();
     var app = express();
 
@@ -73,6 +74,9 @@ module.exports = function() {
     pluto.getStorage = function(filename) {
         if (pluto.storage[filename]) {
             return pluto.storage[filename];
+        } else if (tests) {
+            return pluto.storage[filename] = {};
+            return pluto.storage[filename];
         } else {
             var file = "./storage/"+filename+".json";
             if (fs.existsSync(file)) {
@@ -137,6 +141,18 @@ module.exports = function() {
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(cookieParser());
         app.use(express.static(path.join(__dirname, '../public')));
+        app.use(multer({
+            dest: path.join(__dirname, '../public/uploads'),
+            rename: function (fieldname, filename) {
+                return filename+Date.now();
+            },
+            onFileUploadStart: function (file) {
+                console.log(file.originalname + ' is starting ...')
+            },
+            onFileUploadComplete: function (file) {
+                console.log(file.fieldname + ' uploaded to  ' + file.path)
+            }
+        }));
 
         // catch 404 and forward to error handler
         pluto.router.use(function(req, res, next) {

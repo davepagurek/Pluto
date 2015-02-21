@@ -1,4 +1,7 @@
 module.exports = function(pluto) {
+    var path = require("path");
+    var fs = require('fs');
+
     var usersModule = {};
 
     var data = pluto.getStorage("users")||{};
@@ -41,19 +44,32 @@ module.exports = function(pluto) {
 
     pluto.post("/users/change", function(req, res) {
         var ip = req.body.ip;
+        var newip = req.body.newip;
         var name = req.body.name;
         var del = req.body.delete;
         var github = req.body.github;
         var artists = req.body.artists;
+        var image = 0;
+        if (req.files) image = req.files.image;
 
         if (data[ip]) {
             if (del) {
+                if (data[ip].image && data[ip].image.length>0 && fs.existsSync("./public/uploads/" + data[ip].image)) fs.unlinkSync("./public/uploads/" + data[ip].image);
                 delete data[ip];
                 res.send("User deleted.");
             } else {
                 if (name) data[ip].name = name;
                 if (github) data[ip].github = github;
                 if (artists) data[ip].artists = artists.split(",");
+                if (image) {
+                    if (data[ip].image && data[ip].image.length>0 && fs.existsSync("./public/uploads/" + data[ip].image)) fs.unlinkSync("./public/uploads/" + data[ip].image);
+                    data[ip].image = req.files.image.name;
+                }
+                if (newip && newip != ip) {
+                    data[ip].ip = newip;
+                    data[newip] = data[ip];
+                    delete data[ip];
+                }
                 res.send("User changed.");
             }
             pluto.saveStorage("users", data);

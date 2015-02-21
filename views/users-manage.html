@@ -10,11 +10,12 @@
         <div class='container'>
             <h2>Existing Users</h2>
             {{#each users}}
-            <form method='post' action='/users/change'>
+            <form method='post' action='/users/change' enctype="multipart/form-data">
+                <input name='ip' type='hidden' value='{{ip}}' />
                 <h3>{{name}}</h3>
                 <div class='value'>
                     <label>IP</label>
-                    <input name='ip' type='text' value='{{ip}}' />
+                    <input name='newip' type='text' value='{{ip}}' />
                 </div>
                 <div class='value'>
                     <label>Name</label>
@@ -31,6 +32,11 @@
                 <div class='value'>
                     <label>Delete</label>
                     <input name='delete' type='checkbox' />
+                </div>
+                <div class='value'>
+                    <label>Profile Image</label>
+                    <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
+                    <input type="file" name="image" />
                 </div>
                 <input type='submit' value='Change' />
                 <a href="/score/{{encodedIP}}">View AwesomePoints score</a>

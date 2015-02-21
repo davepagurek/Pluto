@@ -1,0 +1,57 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,700);
+
+body {
+    margin:0;
+    padding:0;
+    background-color:#37474F;
+    font-family: 'Roboto', sans-serif;
+}
+
+.user {
+    border-radius:4px;
+    padding:20px;
+    background-color:#FFF;
+    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+    display:block;
+    width: 300px;
+    margin:20px;
+    opacity:0.6;
+}
+.user.in {
+    opacity:1;
+}
+
+.user h2, .user h3 {
+    font-size:25px;
+}
+
+.user h2 {
+    margin: 0 0 10px 0;
+    font-size:25px;
+}
+
+.user h3 {
+    font-weight:normal;
+    text-align:center;
+    margin: 5px 0 0 0;
+    font-size:25px;
+}
+
+.column {
+    display:inline-block;
+    vertical-align:middle;
+}
+
+.column + .column {
+    margin-left:40px;
+}
+
+
+.icon {
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background-size:cover;
+    background-position:center;
+    background-image:url(../images/shitty-yuchen.png);
+}
