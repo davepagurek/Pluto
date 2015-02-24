@@ -55,3 +55,79 @@ body {
     background-position:center;
     background-image:url(../images/shitty-yuchen.png);
 }
+
+
+
+/* hal */ 
+.hal {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    width:300px;
+    height:300px;
+    background: radial-gradient(ellipse at center, #1c1c1c 58%,#9f9f9f 65%,#0e0e0e 72%);
+    border-radius:50%;
+    position:absolute;
+    right:20px;
+    top:20px;
+}
+.light {
+    width:86%;
+    height:86%;
+    position:absolute;
+    left:7%;
+    top:7%;
+    border-radius:50%;
+    background: radial-gradient(ellipse at center, #f7ae04 2%,#b20306 9%,#000000 68%);
+}
+
+.reflection {
+    box-sizing: border-box; 
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box;
+
+    height: 0; 
+    padding: 0; 
+    border-top: 31px solid rgba(255,255,255,0.3); 
+    border-left: 15px solid transparent; 
+    border-right: 15px solid transparent; 
+    position:absolute;
+    top:10%;
+    width:24%;
+    left:50%;
+    margin-left:-12%;
+    border-radius:100px;
+}
+.reflection:after {
+    content: "";
+    box-sizing: border-box; 
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box;
+
+    height: 0; 
+    padding: 0; 
+    border-top: 13px solid rgba(255,255,255,0.2);
+    border-left: 8px solid transparent; 
+    border-right: 8px solid transparent; 
+    position:absolute;
+    margin-top:40%;
+    width:80%;
+    left:50%;
+    margin-left:-40%;
+    border-radius:10px;
+}
+
+.reflection.left {
+    left:22%;
+    top:22%;
+    margin-left:-10%;
+    margin-right:0;
+    transform: scale(1, 0.8) skew(-10deg, -16deg) rotate(-50deg);
+}
+
+.reflection.right {
+    left:auto;
+    right:22%;
+    top:22%;
+    margin-left:0;
+    margin-right:-10%;
+    transform: scale(1, 0.8) skew(10deg, 16deg) rotate(50deg);
+}
