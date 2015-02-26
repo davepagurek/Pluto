@@ -9,6 +9,7 @@ module.exports = function(tests) {
     var exphbs = require('express-handlebars');
     var multer  = require('multer');
     require('es6-promise').polyfill();
+    require("shelljs/global");
     var app = express();
 
     var pluto = {};
@@ -38,7 +39,10 @@ module.exports = function(tests) {
         pluto.router.post.apply(pluto.router, arguments);
     };
 
-
+    //Text-to-speech
+    pluto.say = function(text) {
+        exec("echo " + text.replace("\"", "\\\"") + " | festival --tts");
+    };
 
     var addListener = function(event, callback) {
         if (!pluto.listeners[event]) {
