@@ -33,7 +33,7 @@
         "url": "https://github.com/pahgawk/Pluto/issues"
     },
     "engines": {
-        "iojs": "1.0.x"
+        "iojs": "1.3.x"
     },
     "homepage": "https://github.com/pahgawk/Pluto"
 }
