@@ -15,7 +15,7 @@ module.exports = function(tests) {
     var pluto = {};
 
     var festival = false;
-    if (!which("festival")) {
+    if (which("festival")) {
         festival = true;
     }
 

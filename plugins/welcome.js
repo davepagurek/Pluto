@@ -33,7 +33,7 @@ module.exports = function(pluto) {
             }else if (user.name=="Yu Chen"){
                 addLine("Hola, Yu Chen. Did you know that there are more than 1000 species of Cats around the world. MeeeWow!");
             }else if (user.name=="Steven"){
-                exec ("Hey there. Stevie. Remember, Silence is consent.");
+                addLine("Hey there. Stevie. Remember, Silence is consent.");
             } else {
 
                 request("http://www.davepagurek.com/badjokes/joke").then(function(res) {
