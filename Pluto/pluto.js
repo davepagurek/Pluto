@@ -14,6 +14,11 @@ module.exports = function(tests) {
 
     var pluto = {};
 
+    var festival = false;
+    if (!which("festival")) {
+        festival = true;
+    }
+
     pluto.sources = [];
     pluto.modules = [];
     pluto.schedules = [];
@@ -41,7 +46,10 @@ module.exports = function(tests) {
 
     //Text-to-speech
     pluto.say = function(text) {
-        exec("echo " + text.replace("\"", "\\\"") + " | festival --tts");
+        if (festival) {
+            exec("echo " + text.replace("\"", "\\\"") + " | festival --tts");
+        }
+        console.log("Pluto says: " + text);
     };
 
     var addListener = function(event, callback) {
