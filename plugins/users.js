@@ -101,7 +101,7 @@ module.exports = function(pluto) {
 
             res.send(data[ip].name + " signed " + (data[ip].in?"in":"out") + "!");
         } else {
-            res.send("User does not exist.");
+            res.send("User does not exist: " + ip + "\nUsers: " + JSON.stringify(data));
         }
     });
 
