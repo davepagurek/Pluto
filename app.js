@@ -35,5 +35,5 @@ pluto.addModule(require("./plugins/music.js")(pluto));
 pluto.addModule(require("./plugins/display.js")(pluto));
 
 
-pluto.listen(3000);
+pluto.listen(process.env.PORT || 3000);
 
