@@ -62,7 +62,7 @@ module.exports = function(pluto) {
                 currentVote.yes = currentVote.yes.filter(function(element) {
                     return (element != ip);
                 });
-                currentVote.yes = currentVote.yes.filter(function(element) {
+                currentVote.no = currentVote.no.filter(function(element) {
                     return (element != ip);
                 });
 
