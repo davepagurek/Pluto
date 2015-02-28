@@ -86,6 +86,7 @@ module.exports = function(pluto) {
         if (listening) {
             
             listening.id = id;
+            listening.in = true;
             data[id] = listening;
             listening = 0;
 
