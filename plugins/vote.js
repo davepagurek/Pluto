@@ -25,7 +25,7 @@ module.exports = function(pluto) {
     };
 
     pluto.post("/vote/new", function(req, res) {
-        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var ip = req.cookies.plutoId || makeId(20);
 
         if (currentVote) {
             res.send("Can't make a new vote, there's already a vote running!");
@@ -52,7 +52,7 @@ module.exports = function(pluto) {
     });
 
     pluto.get("/vote/:vote", function(req, res) {
-        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var ip = req.cookies.plutoId || makeId(20);
         var vote = decodeURIComponent(req.params.vote);
 
         if (data[ip]) {

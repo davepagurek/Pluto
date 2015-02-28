@@ -7,6 +7,16 @@ module.exports = function(pluto) {
     var data = pluto.getStorage("users")||{};
     var listening = 0;
 
+    var makeId = function(length) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for( var i=0; i < length; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    };
+
 
     pluto.get("/users/all", function(req, res) {
        res.send(data);
@@ -79,9 +89,10 @@ module.exports = function(pluto) {
     });
 
     pluto.get("/users/io", function(req, res) {
-        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var ip = req.cookies.plutoId || makeId(20);
 
         if (listening) {
+            res.cookie('plutoId', ip, { maxAge: 9000000000, httpOnly: true });
             listening.ip = ip;
             data[ip] = listening;
             listening = 0;
