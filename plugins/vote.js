@@ -12,12 +12,15 @@ module.exports = function(pluto) {
         if (currentVote.yes.length > Math.floor(Object.keys(data).length/2)) {
             last = "yes";
             pluto.emitEvent("points::awardTo", data[currentVote.user], parseInt(currentVote.points));
+            currentVote = {};
             return true;
         } else if (currentVote.no.length > Math.floor(Object.keys(data).length/2)) {
             last = "no";
+            currentVote = {};
             return true;
         } else if (currentVote.no.length+currentVote.yes.length >= Object.keys(data).length) {
             last = "no";
+            currentVote = {};
             return true;
         } else {
             return false;
