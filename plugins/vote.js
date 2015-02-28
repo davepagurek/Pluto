@@ -3,9 +3,26 @@ module.exports = function(pluto) {
     var fs = require('fs');
 
     var voteModule = {};
+    var last = "";
 
     var data = pluto.getStorage("users")||{};
     var currentVote = 0;
+
+    var isDone = function() {
+        if (currentVote.yes.length > Math.floor(Object.keys(data).length/2)) {
+            last = "yes";
+            pluto.emitEvent("points::awardTo", data[currentVote.user], parseInt(currentVote.points));
+            return true;
+        } else if (currentVote.no.length > Math.floor(Object.keys(data).length/2)) {
+            last = "no";
+            return true;
+        } else if (currentVote.no.length+currentVote.yes.length >= Object.keys(data).length) {
+            last = "no";
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     pluto.post("/vote/new", function(req, res) {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -34,13 +51,47 @@ module.exports = function(pluto) {
         }
     });
 
+    pluto.get("/vote/:vote", function(req, res) {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        var vote = decodeURIComponent(req.params.vote);
+
+        if (data[ip]) {
+            var user = decodeURIComponent(req.params.user);
+
+            if (vote == "yes" || vote == "no") {
+                currentVote.yes = currentVote.yes.filter(function(element) {
+                    return (element != ip);
+                });
+                currentVote.yes = currentVote.yes.filter(function(element) {
+                    return (element != ip);
+                });
+
+                currentVote[vote].push(ip);
+                if (isDone()) {
+                    res.send("Vote complete! The winner was <strong>" + last + "!</strong>");
+                } else {
+                    res.send("Your vote has been cast.");
+                }
+            } else {
+                res.send("I don't know what you're trying to vote for!");
+            }
+
+        } else {
+            res.send("Hey, you're not a registered user!");
+        }
+    });
+
     pluto.get("/vote", function(req, res) {
-        res.render("vote.html", {
-            yes: currentVote.yes.length,
-            no: currentVote.no.length,
-            user: data[currentVote.user].name,
-            points: currentVote.points
-        });
+        if (currentVote) {
+            res.render("vote.html", {
+                yes: currentVote.yes.length,
+                no: currentVote.no.length,
+                user: data[currentVote.user].name,
+                points: currentVote.points
+            });
+        } else {
+            res.send("There's no current vote.");
+        }
     });
 
 
