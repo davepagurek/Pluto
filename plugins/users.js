@@ -18,7 +18,7 @@ module.exports = function(pluto) {
         var users = [];
         for (var user in data) {
             users.push(data[user]);
-            users[users.length-1].encodedIP = encodeURIComponent(users[users.length-1].ip);
+            users[users.length-1].encodedid = encodeURIComponent(users[users.length-1].id);
         }
         res.render("users-manage.html", {
             "users": users
@@ -33,20 +33,20 @@ module.exports = function(pluto) {
 
         if (!listening) {
             listening = {
-                "ip": 0,
+                "id": 0,
                 "name": name,
                 "github": github,
                 "artists": artists.split(",")
             };
-            res.send("User " + name + " added. Make the user go to <strong>/users/io</strong> to register an IP.");
+            res.send("User " + name + " added. Make the user go to <strong>/users/io</strong> to register an id.");
         } else {
-            res.send("Can't add a new user yet, we're waiting for " + listening.name + " to register their IP!");
+            res.send("Can't add a new user yet, we're waiting for " + listening.name + " to register their id!");
         }
     });
 
     pluto.post("/users/change", function(req, res) {
-        var ip = req.body.ip;
-        var newip = req.body.newip;
+        var id = req.body.id;
+        var newid = req.body.newid;
         var name = req.body.name;
         var del = req.body.delete;
         var github = req.body.github;
@@ -54,23 +54,23 @@ module.exports = function(pluto) {
         var image = 0;
         if (req.files) image = req.files.image;
 
-        if (data[ip]) {
+        if (data[id]) {
             if (del) {
-                if (data[ip].image && data[ip].image.length>0 && fs.existsSync("./public/uploads/" + data[ip].image)) fs.unlinkSync("./public/uploads/" + data[ip].image);
-                delete data[ip];
+                if (data[id].image && data[id].image.length>0 && fs.existsSync("./public/uploads/" + data[id].image)) fs.unlinkSync("./public/uploads/" + data[id].image);
+                delete data[id];
                 res.send("User deleted.");
             } else {
-                if (name) data[ip].name = name;
-                if (github) data[ip].github = github;
-                if (artists) data[ip].artists = artists.split(",");
+                if (name) data[id].name = name;
+                if (github) data[id].github = github;
+                if (artists) data[id].artists = artists.split(",");
                 if (image) {
-                    if (data[ip].image && data[ip].image.length>0 && fs.existsSync("./public/uploads/" + data[ip].image)) fs.unlinkSync("./public/uploads/" + data[ip].image);
-                    data[ip].image = req.files.image.name;
+                    if (data[id].image && data[id].image.length>0 && fs.existsSync("./public/uploads/" + data[id].image)) fs.unlinkSync("./public/uploads/" + data[id].image);
+                    data[id].image = req.files.image.name;
                 }
-                if (newip && newip != ip) {
-                    data[ip].ip = newip;
-                    data[newip] = data[ip];
-                    delete data[ip];
+                if (newid && newid != id) {
+                    data[id].id = newid;
+                    data[newid] = data[id];
+                    delete data[id];
                 }
                 res.send("User changed.");
             }
@@ -81,30 +81,30 @@ module.exports = function(pluto) {
     });
 
     pluto.get("/users/io", function(req, res) {
-        var ip = req.cookies.plutoId || pluto.makeId(20);
+        var id = pluto.getId(req, res);
 
         if (listening) {
-            res.cookie('plutoId', ip, { maxAge: 9000000000, httpOnly: true });
-            listening.ip = ip;
-            data[ip] = listening;
+            
+            listening.id = id;
+            data[id] = listening;
             listening = 0;
 
-            pluto.emitEvent("users::register", data[ip]);
+            pluto.emitEvent("users::register", data[id]);
 
             pluto.saveStorage("users", data);
 
-            res.send(data[ip].name + " registered!");
+            res.send(data[id].name + " registered!");
 
-        } else if (data[ip]) {
-            data[ip].in = (data[ip].in?false:true);
+        } else if (data[id]) {
+            data[id].in = (data[id].in?false:true);
 
-            pluto.emitEvent("users::sign" + (data[ip].in?"in":"out"), data[ip]);
+            pluto.emitEvent("users::sign" + (data[id].in?"in":"out"), data[id]);
 
             pluto.saveStorage("users", data);
 
-            res.send(data[ip].name + " signed " + (data[ip].in?"in":"out") + "!");
+            res.send(data[id].name + " signed " + (data[id].in?"in":"out") + "!");
         } else {
-            res.send("User does not exist: " + ip + "\nUsers: " + JSON.stringify(data));
+            res.send("User does not exist: " + id + "\nUsers: " + JSON.stringify(data));
         }
     });
 

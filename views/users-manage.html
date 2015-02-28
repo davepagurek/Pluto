@@ -11,11 +11,11 @@
             <h2>Existing Users</h2>
             {{#each users}}
             <form method='post' action='/users/change' enctype="multipart/form-data">
-                <input name='ip' type='hidden' value='{{ip}}' />
+                <input name='id' type='hidden' value='{{id}}' />
                 <h3>{{name}}</h3>
                 <div class='value'>
-                    <label>IP</label>
-                    <input name='newip' type='text' value='{{ip}}' />
+                    <label>ID</label>
+                    <input name='newid' type='text' value='{{id}}' />
                 </div>
                 <div class='value'>
                     <label>Name</label>
@@ -39,7 +39,7 @@
                     <input type="file" name="image" />
                 </div>
                 <input type='submit' value='Change' />
-                <a href="/score/{{encodedIP}}">View AwesomePoints score</a>
+                <a href="/score/{{encodedid}}">View AwesomePoints score</a>
             </form>
             {{/each}}
 

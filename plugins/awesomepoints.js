@@ -22,11 +22,11 @@ module.exports = function(pluto) {
 
     pointsModule.listeners = {
         "points::awardTo": function(user,increment) {
-            if (data[user.ip]) {
-                if(data[user.ip].points)
-                    data[user.ip].points += increment;
+            if (data[user.id]) {
+                if(data[user.id].points)
+                    data[user.id].points += increment;
                 else
-                    data[user.ip].points = increment;
+                    data[user.id].points = increment;
 
                 pluto.saveStorage("users", data, function() {
                     //saved!

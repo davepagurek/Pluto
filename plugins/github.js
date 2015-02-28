@@ -37,7 +37,7 @@ module.exports = function(pluto) {
 
     githubModule.listeners = {
         "users::register": function(user) {
-            checkGithub(user.ip);
+            checkGithub(user.id);
         }
     };
 

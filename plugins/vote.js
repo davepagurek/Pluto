@@ -28,7 +28,7 @@ module.exports = function(pluto) {
     };
 
     pluto.post("/vote/new", function(req, res) {
-        var ip = req.cookies.plutoId || pluto.makeId(20);
+        var id = pluto.getId(req, res);
 
         if (currentVote) {
             res.send("Can't make a new vote, there's already a vote running!");
@@ -36,7 +36,7 @@ module.exports = function(pluto) {
             var voteUser = 0;
             for (var user in data) {
                 if (data[user].name.indexOf(req.body.user) != -1) {
-                    voteUser = data[user].ip;
+                    voteUser = data[user].id;
                     break;
                 }
             }
@@ -44,7 +44,7 @@ module.exports = function(pluto) {
                 currentVote = {
                     user: voteUser,
                     points: req.body.points,
-                    yes: [ip],
+                    yes: [id],
                     no: []
                 };
                 res.send("Vote created! Send users to <strong>/vote</strong> to vote.");
@@ -55,21 +55,21 @@ module.exports = function(pluto) {
     });
 
     pluto.get("/vote/:vote", function(req, res) {
-        var ip = req.cookies.plutoId || pluto.makeId(20);
+        var id = pluto.getId(req, res);
         var vote = decodeURIComponent(req.params.vote);
 
-        if (data[ip]) {
+        if (data[id]) {
             var user = decodeURIComponent(req.params.user);
 
             if (vote == "yes" || vote == "no") {
                 currentVote.yes = currentVote.yes.filter(function(element) {
-                    return (element != ip);
+                    return (element != id);
                 });
                 currentVote.no = currentVote.no.filter(function(element) {
-                    return (element != ip);
+                    return (element != id);
                 });
 
-                currentVote[vote].push(ip);
+                currentVote[vote].push(id);
                 if (isDone()) {
                     res.send("Vote complete! The winner was <strong>" + last + "!</strong>");
                 } else {

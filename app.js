@@ -1,7 +1,9 @@
-var pluto = require("./Pluto/pluto.js")();
+var pluto = require("./Pluto/pluto.js")({
+	"id": "COOKIE"
+});
 
 //Keeps track of if users are IN or OUT by.
-//listening for GET requests to /user/<userid>/<in:out>
+//listening for GET requests to /user/io
 pluto.addSource(require("./plugins/users.js")(pluto));
 
 //Outputs "Hello, <username>!" in the console
