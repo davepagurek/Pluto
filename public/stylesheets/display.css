@@ -7,14 +7,27 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+#users {
+    position:absolute;
+    top:0;
+    left:0;
+    right: 340px;
+}
+
+#sidebar {
+    width:300px;
+    margin:20px;
+    float:right;
+}
+
 .user {
     border-radius:4px;
     padding:20px;
     background-color:#FFF;
     box-shadow:0 4px 10px rgba(0,0,0,0.4);
-    display:block;
+    display:inline-block;
     width: 300px;
-    margin:20px;
+    margin:20px 0 20px 20px;
     opacity:0.6;
 }
 .user.in {
@@ -57,6 +70,27 @@ body {
 }
 
 
+/* Vote maker */
+form {
+    background-color:#FFF;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:4px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+}
+
+input[type="number"] {
+    width:40px;
+}
+
+.line {
+    line-height: 25px;
+}
+
+.line + .line {
+    margin-top:10px;
+}
+
 
 /* hal */ 
 .hal {
@@ -65,9 +99,8 @@ body {
     height:300px;
     background: radial-gradient(ellipse at center, #1c1c1c 58%,#9f9f9f 65%,#0e0e0e 72%);
     border-radius:50%;
-    position:absolute;
-    right:20px;
-    top:20px;
+    margin-bottom:20px;
+    position:relative;
 }
 .light {
     width:86%;

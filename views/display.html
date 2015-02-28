@@ -19,12 +19,22 @@
             </div>
             {{/each}}
         </div>
-        <div class="hal">
-            <div class="light">
-                <div class="reflection left"></div>
-                <div class="reflection center"></div>
-                <div class="reflection right"></div>
+        <div id="sidebar">
+            <div class="hal">
+                <div class="light">
+                    <div class="reflection left"></div>
+                    <div class="reflection center"></div>
+                    <div class="reflection right"></div>
+                </div>
             </div>
+            <form id="vote" method="post" action="/vote/new">
+                <div class="line">
+                    Give <input type="number" value="0" name="points" /> points to <input type="text" placeholder="Username" name="user" />
+                </div>
+                <div class="line">
+                    <input type="submit" value="Start vote" />
+                </div>
+            </form>
         </div>
     </body>
 </html>
