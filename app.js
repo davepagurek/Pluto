@@ -1,5 +1,5 @@
 var pluto = require("./Pluto/pluto.js")({
-	"id": "COOKIE"
+	"id": "IP"
 });
 
 //Keeps track of if users are IN or OUT by.

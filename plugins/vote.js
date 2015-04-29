@@ -71,29 +71,40 @@ module.exports = function(pluto) {
 
                 currentVote[vote].push(id);
                 if (isDone()) {
-                    res.send("Vote complete! The winner was <strong>" + last + "!</strong>");
+                    res.render("vote.html", {
+                        message: "Vote complete! The winner was <strong>" + last + "!</strong>"
+                    });
                 } else {
-                    res.send("Your vote has been cast.");
+                    res.render("vote.html", {
+                        message: "Your vote has been cast."
+                    });
                 }
             } else {
-                res.send("I don't know what you're trying to vote for!");
+                res.render("vote.html", {
+                    message: "I don't know what you're trying to vote for!"
+                });
             }
 
         } else {
-            res.send("Hey, you're not a registered user!");
+            res.render("vote.html", {
+                message: "Hey, you're not a registered user!"
+            });
         }
     });
 
     pluto.get("/vote", function(req, res) {
         if (currentVote) {
             res.render("vote.html", {
+                form: true,
                 yes: currentVote.yes.length,
                 no: currentVote.no.length,
                 user: data[currentVote.user].name,
                 points: currentVote.points
             });
         } else {
-            res.send("There's no current vote.");
+            res.render("vote.html", {
+                message: "There's no current vote."
+            });
         }
     });
 
