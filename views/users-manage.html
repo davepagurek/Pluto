@@ -1,66 +1,60 @@
-<html>
-    <head>
-        <title>Users</title>
-        <link rel='stylesheet' type='text/css' href='/stylesheets/users.css' />
-    </head>
-    <body>
-        <div class="header">
-            <h1>Manage Users</h1>
-        </div>
-        <div class='container'>
-            <h2>Existing Users</h2>
-            {{#each users}}
-            <form method='post' action='/users/change' enctype="multipart/form-data">
-                <input name='id' type='hidden' value='{{id}}' />
-                <h3>{{name}}</h3>
-                <div class='value'>
-                    <label>ID</label>
-                    <input name='newid' type='text' value='{{id}}' />
-                </div>
-                <div class='value'>
-                    <label>Name</label>
-                    <input name='name' type='text' value='{{name}}' />
-                </div>
-                <div class='value'>
-                    <label>Github Username</label>
-                    <input name='github' type='text' value='{{github}}' />
-                </div>
-                <div class='value'>
-                    <label>Artists</label>
-                    <input name='artists' type='text' value='{{artists}}' />
-                </div>
-                <div class='value'>
-                    <label>Delete</label>
-                    <input name='delete' type='checkbox' />
-                </div>
-                <div class='value'>
-                    <label>Profile Image</label>
-                    <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
-                    <input type="file" name="image" />
-                </div>
-                <input type='submit' value='Change' />
-                <a href="/score/{{encodedid}}">View AwesomePoints score</a>
-            </form>
-            {{/each}}
+{{#if message}}
+<div class="message">
+    {{message}}
+</div>
+{{/if}}
 
-            <h2>Register new user</h2>
-            <form method='post' action='/users/add'>
-                <div class='value'>
-                    <label>Name</label>
-                    <input name='name' type='text' />
-                </div>
-                <div class='value'>
-                    <label>GitHub</label>
-                    <input name='github' type='text' />
-                </div>
-                <div class='value'>
-                    <label>Artists</label>
-                    <input name='artists' type='text' />
-                </div>
+<h2>Existing Users</h2>
+{{#each users}}
+<form method='post' action='/users/change' enctype="multipart/form-data">
+    <input name='id' type='hidden' value='{{id}}' />
+    <h3>{{name}}</h3>
+    <div class='value'>
+        <label>ID</label>
+        <input name='newid' type='text' value='{{id}}' />
+    </div>
+    <div class='value'>
+        <label>Name</label>
+        <input name='name' type='text' value='{{name}}' />
+    </div>
+    <div class='value'>
+        <label>Github Username</label>
+        <input name='github' type='text' value='{{github}}' />
+    </div>
+    <div class='value'>
+        <label>Artists</label>
+        <input name='artists' type='text' value='{{artists}}' />
+    </div>
+    <div class='value'>
+        <label>Delete</label>
+        <input name='delete' type='checkbox' />
+    </div>
+    <div class='value'>
+        <label>Profile Image</label>
+        <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
+        <input type="file" name="image" />
+    </div>
+    <input type='submit' value='Change' />
+    <a href="/score/{{encodedid}}">View AwesomePoints score</a>
+</form>
+{{/each}}
+
+<h2>Register new user</h2>
+<form method='post' action='/users/add'>
+    <div class='value'>
+        <label>Name</label>
+        <input name='name' type='text' />
+    </div>
+    <div class='value'>
+        <label>GitHub</label>
+        <input name='github' type='text' />
+    </div>
+    <div class='value'>
+        <label>Artists</label>
+        <input name='artists' type='text' />
+    </div>
 
 
-                <input type='submit' value='Add' />
-            </form>
-        </div>
-    </body>
-</html>
+    <input type='submit' value='Add' />
+</form>
+

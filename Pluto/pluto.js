@@ -48,17 +48,17 @@ module.exports = function(config, tests) {
 
 
     pluto.getId = function(req, res) {
-    	if (config.id == "IP") {
-    		return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    	} else { //Default: COOKIE
-    		if (req.cookies.plutoId) {
-    			return req.cookies.plutoId;
-    		} else {
-    			var id = makeId(20);
-    			res.cookie('plutoId', id, { maxAge: 9000000000, httpOnly: true });
-    			return id;
-    		}
-    	}
+        if (config.id == "IP") {
+            return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        } else { //Default: COOKIE
+            if (req.cookies.plutoId) {
+                return req.cookies.plutoId;
+            } else {
+                var id = makeId(20);
+                res.cookie('plutoId', id, { maxAge: 9000000000, httpOnly: true });
+                return id;
+            }
+        }
     };
 
     var makeId = function(length) {

@@ -4,7 +4,8 @@ module.exports = function(pluto) {
 
     pluto.get("/", function(req, res) {
         res.render("display.html", {
-            "users": users
+            "users": users,
+            "layout": false
         });
     });
 
