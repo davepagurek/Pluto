@@ -50,7 +50,11 @@ module.exports = function(pluto) {
                 "message": "User " + name + " added. Make the user go to <strong>/users/io</strong> to register an id."
             });
         } else {
-            res.send("Can't add a new user yet, we're waiting for " + listening.name + " to register their id!");
+            res.render("users-manage.html", {
+                "users": users,
+                "title": title,
+                "message": "Can't add a new user yet, we're waiting for " + listening.name + " to register their id!"
+            });
         }
     });
 

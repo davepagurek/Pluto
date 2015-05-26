@@ -1,20 +1,12 @@
-<html>
-    <head>
-        <title>Vote!</title>
-        <link type="text/css" rel="stylesheet" href="/stylesheets/vote.css" />
-    </head>
-    <body>
-        <div class="content">
-            {{#message}}
-            {{message}}
-            {{/message}}
+{{#if message}}
+<div class="message">
+    {{message}}
+</div>
+{{/if}}
 
-            {{#form}}
-            <h1>Vote!</h1>
-            <h2>Give {{user}} {{points}} points?</h2>
-            <h3>Yes: {{yes}}, No: {{no}}</h3>
-            <p><a href="/vote/yes">Yes!</a> <a href="/vote/no">No!</a></p>
-            {{/form}}
-        </div>
-    </body>
-</html>
+{{#form}}
+<h1>Vote!</h1>
+<h2>Give {{user}} {{points}} points?</h2>
+<h3>Yes: {{yes}}, No: {{no}}</h3>
+<p><a href="/vote/yes">Yes!</a> <a href="/vote/no">No!</a></p>
+{{/form}}

@@ -8,6 +8,8 @@ module.exports = function(pluto) {
     var data = pluto.getStorage("users")||{};
     var currentVote = 0;
 
+    var title = "Vote!"
+
     var isDone = function() {
         if (currentVote.yes.length > Math.floor(Object.keys(data).length/2)) {
             last = "yes";
@@ -31,7 +33,10 @@ module.exports = function(pluto) {
         var id = pluto.getId(req, res);
 
         if (currentVote) {
-            res.send("Can't make a new vote, there's already a vote running!");
+            res.render("vote.html", {
+                title: title,
+                message: "Can't make a new vote, there's already a vote running!"
+            })
         } else {
             var voteUser = 0;
             for (var user in data) {
@@ -47,9 +52,15 @@ module.exports = function(pluto) {
                     yes: [id],
                     no: []
                 };
-                res.send("Vote created! Send users to <strong>/vote</strong> to vote.");
+                res.render("vote.html", {
+                    title: title,
+                    message: "Vote created! Send users to <strong>/vote</strong> to vote."
+                });
             } else {
-                res.send("User does not exist.");
+                res.render("vote.html", {
+                    title: title,
+                    message: "User does not exist."
+                })
             }
         }
     });
@@ -72,21 +83,25 @@ module.exports = function(pluto) {
                 currentVote[vote].push(id);
                 if (isDone()) {
                     res.render("vote.html", {
+                        title: title,
                         message: "Vote complete! The winner was <strong>" + last + "!</strong>"
                     });
                 } else {
                     res.render("vote.html", {
+                        title: title,
                         message: "Your vote has been cast."
                     });
                 }
             } else {
                 res.render("vote.html", {
+                    title: title,
                     message: "I don't know what you're trying to vote for!"
                 });
             }
 
         } else {
             res.render("vote.html", {
+                title: title,
                 message: "Hey, you're not a registered user!"
             });
         }
@@ -95,6 +110,7 @@ module.exports = function(pluto) {
     pluto.get("/vote", function(req, res) {
         if (currentVote) {
             res.render("vote.html", {
+                title: title,
                 form: true,
                 yes: currentVote.yes.length,
                 no: currentVote.no.length,
@@ -103,6 +119,7 @@ module.exports = function(pluto) {
             });
         } else {
             res.render("vote.html", {
+                title: title,
                 message: "There's no current vote."
             });
         }
