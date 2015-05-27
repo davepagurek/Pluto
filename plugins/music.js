@@ -36,6 +36,7 @@ module.exports = function(pluto) {
                 songs = res.body.tracks;
                 var selectedSong = songs[Math.floor(Math.random()*songs.length)];
                 console.log("Selected song: " + selectedSong.name + " - " + selectedArtist);
+                exec("bin/sp.sh search " + selectedSong.name + " " + selectedArtist);
             });
         });
 
