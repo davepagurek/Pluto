@@ -1,5 +1,5 @@
 module.exports = function(config, tests) {
-	config = config || {};
+    config = config || {};
 
     var path = require('path');
     //var favicon = require('serve-favicon');

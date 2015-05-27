@@ -6,9 +6,7 @@ module.exports = function(pluto) {
 
     var musicModule = {};
 
-    musicModule.playing = false;
-
-    musicModule.selectSong = function() {
+    pluto.get("/music/play", function(req, res) {
         var artists = [];
         for (var user in data) {
             if (data[user].in && data[user].artists) {
@@ -35,25 +33,14 @@ module.exports = function(pluto) {
                 }
                 songs = res.body.tracks;
                 var selectedSong = songs[Math.floor(Math.random()*songs.length)];
-                console.log("Selected song: " + selectedSong.name + " - " + selectedArtist);
-                exec("bin/sp.sh search " + selectedSong.name + " " + selectedArtist);
+                pluto.emitEvent("music::play", {
+                    name: selectedSong.name,
+                    artist: selectedArtist
+                });
             });
         });
-
-    };
-
-    pluto.get("/music/play", function(req, res) {
-        pluto.emitEvent("music::play");
         res.send("Playing music");
     });
-
-    musicModule.listeners = {
-        "music::play": function() {
-            if (!musicModule.playing) musicModule.selectSong();
-        }
-    };
-
-
 
     return musicModule;
 }
