@@ -21,7 +21,6 @@ module.exports = function(config, tests) {
         festival = true;
     }
 
-    pluto.sources = [];
     pluto.modules = [];
     pluto.schedules = [];
     pluto.storage = {};
@@ -137,17 +136,6 @@ module.exports = function(config, tests) {
         fs.writeFile("./storage/"+filename+".json", JSON.stringify(data), callback);
     };
 
-
-
-    pluto.addSource = function(source) {
-        pluto.sources.push(source);
-    };
-
-    pluto.removeSource = function(source) {
-        pluto.sources = pluto.sources.map(function(element) {
-            return (element != source);
-        });
-    };
 
     pluto.addModule = function(module) {
         pluto.modules.push(module);

@@ -2,13 +2,18 @@ var pluto = require("./Pluto/pluto.js")({
 	"id": "IP"
 });
 
+// SOURCES
+
 //Keeps track of if users are IN or OUT by.
 //listening for GET requests to /user/io
-pluto.addSource(require("./plugins/users.js")(pluto));
+pluto.addModule(require("./plugins/users.js")(pluto));
 
 //Makes a playlist based on user recommended artists
-pluto.addSource(require("./plugins/music.js")(pluto));
+pluto.addModule(require("./plugins/music.js")(pluto));
 
+
+
+//ACTIONS
 
 //Outputs "Hello, <username>!" in the console
 //when a new user enters

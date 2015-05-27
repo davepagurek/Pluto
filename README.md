@@ -4,12 +4,13 @@
 A home automation framework
 
 <h2>Structure</h2>
-In `app.js`, new modules and sources are added like this:
+In `app.js`, new modules are added like this:
 
 ```javascript
-pluto.addSource(require("./plugins/example-source.js")(pluto));
 pluto.addModule(require("./plugins/example-module.js")(pluto));
 ```
+
+Modules tend to fall into two categories, <strong>sources</strong> and <strong>responders</strong>.
 
 <h3>Sources</h3>
 Sources listen for inputs and emit events when they happen.
@@ -48,22 +49,22 @@ module.exports = function(pluto) {
 };
 ```
 
-<h3>Modules</h3>
-Modules listen for events and do things when they are received.
+<h3>Actions</h3>
+Actions listen for events and do things when they are received.
 
 A sample module:
 ```javascript
 module.exports = function(pluto) {
-    var module = {};
+    var action = {};
 
-  //Register listeners as key-value pairs
-    module.listeners = {
+    //Register listeners as key-value pairs
+    action.listeners = {
         "example-source::visit": function(visits) {
             console.log("Hello, visitor #" + visits + "!");
         }
     };
 
-    return module;
+    return action;
 }
 ```
 
