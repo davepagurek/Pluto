@@ -57,11 +57,9 @@ A sample module:
 module.exports = function(pluto) {
     var action = {};
 
-    //Register listeners as key-value pairs
-    action.listeners = {
-        "example-source::visit": function(visits) {
-            console.log("Hello, visitor #" + visits + "!");
-        }
+    //Register listeners
+    pluto.addListener("example-source::visit", function(visits) {
+        console.log("Hello, visitor #" + visits + "!");
     };
 
     return action;

@@ -20,26 +20,21 @@ module.exports = function(pluto) {
             res.send("0");
     });
 
-    pointsModule.listeners = {
-        "points::awardTo": function(user,increment) {
-            if (data[user.id]) {
-                if(data[user.id].points)
-                    data[user.id].points += increment;
-                else
-                    data[user.id].points = increment;
+    pluto.addListener("points::awardTo", function(user,increment) {
+        if (data[user.id]) {
+            if(data[user.id].points)
+                data[user.id].points += increment;
+            else
+                data[user.id].points = increment;
 
-                pluto.saveStorage("users", data, function() {
-                    //saved!
-                    pluto.emitEvent("users::updated");
-                });
-            } else {
-                console.log("Error awarding points")
-            }
-        },
-        "points::revokeFrom": function(user) {
-            //TODO implement
+            pluto.saveStorage("users", data, function() {
+                //saved!
+                pluto.emitEvent("users::updated");
+            });
+        } else {
+            console.log("Error awarding points")
         }
-    };
+    });
 
     return pointsModule;
 }

@@ -35,12 +35,10 @@ module.exports = function(pluto) {
         }
     });
 
-    githubModule.listeners = {
-        "users::register": function(user) {
-            console.log(user);
-            checkGithub(user.id);
-        }
-    };
+    pluto.addListener("users::register", function(user) {
+        console.log(user);
+        checkGithub(user.id);
+    });
 
     return githubModule;
 };

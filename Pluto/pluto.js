@@ -78,14 +78,18 @@ module.exports = function(config, tests) {
         console.log("Pluto says: " + text);
     };
 
-    var addListener = function(event, callback) {
+    String.prototype.shellEscape = function() {
+        return (this + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+    }
+
+    pluto.addListener = function(event, callback) {
         if (!pluto.listeners[event]) {
             pluto.listeners[event] = [];
         }
         pluto.listeners[event].push(callback);
     };
 
-    var removeListener = function(event, callback) {
+    pluto.removeListener = function(event, callback) {
         if (pluto.listeners[event]) {
 
             //Remove listener from array
