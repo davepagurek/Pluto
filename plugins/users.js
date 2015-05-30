@@ -4,7 +4,7 @@ module.exports = function(pluto) {
 
     var usersModule = {};
 
-    var data = pluto.getStorage("users")||{};
+    var data = pluto.getStorage("users");
     var listening = 0;
 
     var title = "Manage Users";
@@ -50,6 +50,7 @@ module.exports = function(pluto) {
                 "message": "User " + name + " added. Make the user go to <strong>/users/io</strong> to register an id."
             });
         } else {
+            res.status(409);
             res.render("users-manage.html", {
                 "users": users,
                 "title": title,
@@ -97,7 +98,7 @@ module.exports = function(pluto) {
                     "message": "User changed."
                 });
             }
-            pluto.saveStorage("users", data);
+            pluto.saveStorage("users");
         } else {
             res.render("users-manage.html", {
                 "users": users,
@@ -116,7 +117,6 @@ module.exports = function(pluto) {
         var id = pluto.getId(req, res);
 
         if (listening) {
-
             listening.id = id;
             listening.in = true;
             data[id] = listening;
@@ -124,7 +124,7 @@ module.exports = function(pluto) {
 
             pluto.emitEvent("users::register", data[id]);
 
-            pluto.saveStorage("users", data);
+            pluto.saveStorage("users");
 
             res.render("users-manage.html", {
                 "users": users,
@@ -137,7 +137,7 @@ module.exports = function(pluto) {
 
             pluto.emitEvent("users::sign" + (data[id].in?"in":"out"), data[id]);
 
-            pluto.saveStorage("users", data);
+            pluto.saveStorage("users");
 
             res.render("users-manage.html", {
                 "users": users,
@@ -148,7 +148,7 @@ module.exports = function(pluto) {
             res.render("users-manage.html", {
                 "users": users,
                 "title": title,
-                "message": "User does not exist: " + id + "\nUsers: " + JSON.stringify(data)
+                "message": "User does not exist: " + id
             });
         }
     });

@@ -1,9 +1,7 @@
 module.exports = function(pluto) {
     require("shelljs/global");
-    require('es6-promise').polyfill();
-    var request = require('popsicle');
     var pointsModule = {};
-    var data = pluto.getStorage("users")||{};
+    var data = pluto.getStorage("users");
 
 
 
@@ -27,7 +25,7 @@ module.exports = function(pluto) {
             else
                 data[user.id].points = increment;
 
-            pluto.saveStorage("users", data, function() {
+            pluto.saveStorage("users", function() {
                 //saved!
                 pluto.emitEvent("users::updated");
             });

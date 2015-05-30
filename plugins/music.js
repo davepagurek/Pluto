@@ -1,6 +1,4 @@
 module.exports = function(pluto) {
-    require('es6-promise').polyfill();
-    var request = require('popsicle');
 
     var data = pluto.getStorage("users")||{};
 
@@ -14,14 +12,14 @@ module.exports = function(pluto) {
         } while (!selectedUser.artists);
         console.log(selectedUser.name + "'s choice");
         var selectedArtist = selectedUser.artists[Math.floor(Math.random()*selectedUser.artists.length)];
-        request("https://api.spotify.com/v1/search?q=" + encodeURIComponent(selectedArtist) + "&type=artist").then(function(res) {
+        pluto.request("https://api.spotify.com/v1/search?q=" + encodeURIComponent(selectedArtist) + "&type=artist", function(res) {
             if (res.status != 200) {
                 console.log("An error occurred: response " + res.status);
                 return;
             }
             var artist = res.body.artists.items[0];
             console.log("Selected artist " + artist.name);
-            request("https://api.spotify.com/v1/artists/" + artist.id + "/albums").then(function(res) {
+            pluto.request("https://api.spotify.com/v1/artists/" + artist.id + "/albums", function(res) {
                 if (res.status != 200) {
                     console.log("An error occurred: response " + res.status);
                     return;
@@ -29,7 +27,7 @@ module.exports = function(pluto) {
                 var albums = res.body.items;
                 var selectedAlbum = albums[Math.floor(Math.random()*albums.length)];
                 console.log("Selected album " + selectedAlbum.name);
-                request("https://api.spotify.com/v1/albums/" + selectedAlbum.id + "/tracks").then(function(res) {
+                pluto.request("https://api.spotify.com/v1/albums/" + selectedAlbum.id + "/tracks", function(res) {
                     if (res.status != 200) {
                         console.log("An error occurred: response " + res.status);
                         return;

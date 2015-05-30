@@ -1,7 +1,6 @@
 module.exports = function(pluto) {
     require("shelljs/global");
-    require('es6-promise').polyfill();
-    var request = require('popsicle');
+
     var welcomeModule = {
         "waitDelay": 3.5
     };
@@ -34,7 +33,7 @@ module.exports = function(pluto) {
         }else if (user.name=="Steven"){
             addLine("Hey there. Stevie. Remember, Silence is consent.");
         } else {
-            request("http://www.davepagurek.com/badjokes/joke").then(function(res) {
+            pluto.request("http://www.davepagurek.com/badjokes/joke", function(res) {
                 joke = JSON.parse(res.body);
                 addLine("Hello, " + user.name + ". " + joke.q);
                 addLine(joke.a);

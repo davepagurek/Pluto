@@ -11,10 +11,12 @@ module.exports = function(config, tests) {
     var exphbs = require('express-handlebars');
     var multer  = require('multer');
     require('es6-promise').polyfill();
+    var request = require('popsicle');
     require("shelljs/global");
-    var app = express();
 
     var pluto = {};
+
+    pluto.app = express();
 
     var festival = false;
     if (which("festival")) {
@@ -27,14 +29,14 @@ module.exports = function(config, tests) {
     pluto.listeners = {};
 
     pluto.router = express.Router();
-    app.set('views', path.join(__dirname, "../views"))
-    app.engine('.html', exphbs({
+    pluto.app.set('views', path.join(__dirname, "../views"))
+    pluto.app.engine('.html', exphbs({
         defaultLayout: 'main',
         extname: ".html",
         layoutsDir: path.join(__dirname, "../views/layouts"),
         partialsDir: path.join(__dirname, "../views/partials")
     }));
-    app.set('view engine', 'handlebars');
+    pluto.app.set('view engine', 'handlebars');
 
 
     //Map requests to router
@@ -47,7 +49,9 @@ module.exports = function(config, tests) {
 
 
     pluto.getId = function(req, res) {
-        if (config.id == "IP") {
+        if (config.id == "TEST") {
+            return config.getId(req, res);
+        } else if (config.id == "IP") {
             return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         } else { //Default: COOKIE
             if (req.cookies.plutoId) {
@@ -68,6 +72,16 @@ module.exports = function(config, tests) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
         return text;
+    };
+
+    pluto.request = function(url, callback) {
+        if (config.testRequests && config.testRequests[url]) {
+            callback({
+                body: config.testRequests[url]
+            });
+        } else {
+            request(url).then(callback);
+        }
     };
 
     //Text-to-speech
@@ -114,30 +128,34 @@ module.exports = function(config, tests) {
     };
 
     pluto.getStorage = function(filename) {
-        if (pluto.storage[filename]) {
-            return pluto.storage[filename];
-        } else if (tests) {
-            return pluto.storage[filename] = {};
-            return pluto.storage[filename];
-        } else {
-            var file = "./storage/"+filename+".json";
-            if (fs.existsSync(file)) {
-                var content = fs.readFileSync(file, "utf-8");
-                if (content) {
-                    pluto.storage[filename] = JSON.parse(content);
-                    return pluto.storage[filename];
+        if (!pluto.storage[filename]) {
+            if (config.testData) {
+                if (config.testData[filename]) {
+                    pluto.storage[filename] = config.testData[filename];
                 } else {
-                    return false;
+                    pluto.storage[filename] = {};
                 }
             } else {
-                return false;
+                var file = "./storage/"+filename+".json";
+                if (fs.existsSync(file)) {
+                    var content = fs.readFileSync(file, "utf-8");
+                    if (content) {
+                        pluto.storage[filename] = JSON.parse(content);
+                    } else {
+                        pluto.storage[filename] = {};
+                    }
+                } else {
+                    pluto.storage[filename] = {};
+                }
             }
         }
+        return pluto.storage[filename];
     };
 
-    pluto.saveStorage = function(filename, data, callback) {
+    pluto.saveStorage = function(filename, callback) {
+        if (config.testData) return;
         if (!callback) callback = function() {}; //noop
-        fs.writeFile("./storage/"+filename+".json", JSON.stringify(data), callback);
+        if (pluto.storage[filename]) fs.writeFile("./storage/"+filename+".json", JSON.stringify(pluto.storage[filename]), callback);
     };
 
 
@@ -167,12 +185,12 @@ module.exports = function(config, tests) {
     //take precedence over the error listeners
     pluto.listen = function(port) {
         //pluto.router.use(favicon(__dirname + '/public/favicon.ico'));
-        app.use(logger('dev'));
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({ extended: false }));
-        app.use(cookieParser());
-        app.use(express.static(path.join(__dirname, '../public')));
-        app.use(multer({
+        pluto.app.use(logger('dev'));
+        pluto.app.use(bodyParser.json());
+        pluto.app.use(bodyParser.urlencoded({ extended: false }));
+        pluto.app.use(cookieParser());
+        pluto.app.use(express.static(path.join(__dirname, '../public')));
+        pluto.app.use(multer({
             dest: path.join(__dirname, '../public/uploads'),
             rename: function (fieldname, filename) {
                 return filename+Date.now();
@@ -197,8 +215,8 @@ module.exports = function(config, tests) {
             res.send("error: " + err.message);
         });
 
-        app.use("/", pluto.router);
-        app.listen(port);
+        pluto.app.use("/", pluto.router);
+        if (port) pluto.app.listen(port);
 
     };
 

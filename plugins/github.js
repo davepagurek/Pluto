@@ -4,18 +4,16 @@ module.exports = function(pluto) {
 
     var githubModule = {};
 
-    var lastCheck = 0;
-    var data = pluto.getStorage("users")||{};
+    var data = pluto.getStorage("github");
+    var users = pluto.getStorage("users");
 
-    var lastCheck = pluto.getStorage("github")||0;
-
-    var checkGithub = function(user) {
-        if (data[user].github) {
-            console.log("Requesting " + "https://github.com/" + data[user].github);
-            request("https://github.com/" + data[user].github).then(function(res) {
+    githubModule.checkGithub = function(user) {
+        if (users[user].github) {
+            console.log("Requesting " + "https://github.com/" + users[user].github);
+            pluto.request("https://github.com/" + users[user].github, function(res) {
                 var match = /<span class="text-muted">Current streak<\/span>\s+<span class="contrib-number">([0-9]+) day(?:s?)<\/span>/.exec(res.body);
                 if (match) {
-                    pluto.emitEvent("points::awardTo", data[user], parseInt(match[1]));
+                    pluto.emitEvent("points::awardTo", users[user], parseInt(match[1]));
                 }
             });
         }
@@ -25,19 +23,18 @@ module.exports = function(pluto) {
     pluto.schedule(4, function() {
 
         //But only actually check github 24 hours after the initial time
-        if (new Date().getTime() - lastCheck >= 24*60*60*1000) {
-            for (var user in data) {
-                checkGithub(user);
+        if (!data.lastCheck || new Date().getTime() - data.lastCheck >= 24*60*60*1000) {
+            for (var user in users) {
+                githubModule.checkGithub(user);
             }
 
-            lastCheck = new Date().getTime();
-            pluto.saveStorage("github", lastCheck);
+            data.lastCheck = new Date().getTime();
+            pluto.saveStorage("github");
         }
     });
 
     pluto.addListener("users::register", function(user) {
-        console.log(user);
-        checkGithub(user.id);
+        githubModule.checkGithub(user.id);
     });
 
     return githubModule;
