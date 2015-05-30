@@ -69,6 +69,11 @@ module.exports = function(pluto) {
 <h2>Testing</h2>
 Tests can be run with:
 ```
+node_modules/mocha/bin/mocha
+```
+
+Or, to mocha is installed globally (`npm install mocha -g`), simply run:
+```
 mocha
 ```
 
