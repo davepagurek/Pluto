@@ -66,6 +66,12 @@ module.exports = function(pluto) {
 }
 ```
 
+<h2>Testing</h2>
+Tests can be run with:
+```
+mocha
+```
+
 <h2>Dependencies</h2>
 Text-to-speech requires Festival to work. On linux, run:
 ```
