@@ -33,7 +33,7 @@ module.exports = function(pluto) {
     pluto.get("/", function(req, res) {
         data.counter++;
 
-        //Display a response int the browser
+        //Display a response in the browser
         res.send("There have been " + data.counter + " visits");
 
         //Send an event for modules to listen for
@@ -72,7 +72,7 @@ Tests can be run with:
 node_modules/mocha/bin/mocha
 ```
 
-Or, to mocha is installed globally (`npm install mocha -g`), simply run:
+Or, if mocha is installed globally (`npm install mocha -g`), simply run:
 ```
 mocha
 ```
