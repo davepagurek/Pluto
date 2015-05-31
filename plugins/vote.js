@@ -3,26 +3,26 @@ module.exports = function(pluto) {
     var fs = require('fs');
 
     var voteModule = {};
-    var last = "";
+    voteModule.last = "";
 
     var data = pluto.getStorage("users")||{};
-    var currentVote = 0;
+    voteModule.currentVote = 0;
 
     var title = "Vote!"
 
-    var isDone = function() {
-        if (currentVote.yes.length > Math.floor(Object.keys(data).length/2)) {
-            last = "yes";
-            pluto.emitEvent("points::awardTo", data[currentVote.user], parseInt(currentVote.points));
-            currentVote = {};
+    voteModule.isDone = function() {
+        if (voteModule.currentVote.yes.length > Math.floor((Object.keys(data).length-1)/2)) {
+            voteModule.last = "yes";
+            pluto.emitEvent("points::awardTo", data[voteModule.currentVote.user], parseInt(voteModule.currentVote.points));
+            voteModule.currentVote = {};
             return true;
-        } else if (currentVote.no.length > Math.floor(Object.keys(data).length/2)) {
-            last = "no";
-            currentVote = {};
+        } else if (voteModule.currentVote.no.length > Math.floor((Object.keys(data).length-1)/2)) {
+            voteModule.last = "no";
+            voteModule.currentVote = {};
             return true;
-        } else if (currentVote.no.length+currentVote.yes.length >= Object.keys(data).length) {
-            last = "no";
-            currentVote = {};
+        } else if (voteModule.currentVote.no.length+voteModule.currentVote.yes.length >= Object.keys(data).length-1) {
+            voteModule.last = "no";
+            voteModule.currentVote = {};
             return true;
         } else {
             return false;
@@ -32,7 +32,7 @@ module.exports = function(pluto) {
     pluto.post("/vote/new", function(req, res) {
         var id = pluto.getId(req, res);
 
-        if (currentVote) {
+        if (voteModule.currentVote) {
             res.render("vote.html", {
                 title: title,
                 message: "Can't make a new vote, there's already a vote running!"
@@ -46,7 +46,7 @@ module.exports = function(pluto) {
                 }
             }
             if (voteUser) {
-                currentVote = {
+                voteModule.currentVote = {
                     user: voteUser,
                     points: req.body.points,
                     yes: [id],
@@ -73,18 +73,18 @@ module.exports = function(pluto) {
             var user = decodeURIComponent(req.params.user);
 
             if (vote == "yes" || vote == "no") {
-                currentVote.yes = currentVote.yes.filter(function(element) {
+                voteModule.currentVote.yes = voteModule.currentVote.yes.filter(function(element) {
                     return (element != id);
                 });
-                currentVote.no = currentVote.no.filter(function(element) {
+                voteModule.currentVote.no = voteModule.currentVote.no.filter(function(element) {
                     return (element != id);
                 });
 
-                currentVote[vote].push(id);
-                if (isDone()) {
+                voteModule.currentVote[vote].push(id);
+                if (voteModule.isDone()) {
                     res.render("vote.html", {
                         title: title,
-                        message: "Vote complete! The winner was <strong>" + last + "!</strong>"
+                        message: "Vote complete! The winner was <strong>" + voteModule.last + "!</strong>"
                     });
                 } else {
                     res.render("vote.html", {
@@ -108,14 +108,14 @@ module.exports = function(pluto) {
     });
 
     pluto.get("/vote", function(req, res) {
-        if (currentVote) {
+        if (voteModule.currentVote) {
             res.render("vote.html", {
                 title: title,
                 form: true,
-                yes: currentVote.yes.length,
-                no: currentVote.no.length,
-                user: data[currentVote.user].name,
-                points: currentVote.points
+                yes: voteModule.currentVote.yes.length,
+                no: voteModule.currentVote.no.length,
+                user: data[voteModule.currentVote.user].name,
+                points: voteModule.currentVote.points
             });
         } else {
             res.render("vote.html", {
