@@ -16,14 +16,25 @@ body {
     margin-bottom:50px;
 }
 
+.header .wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.header #logo {
+    height:50px;
+    float:right;
+    margin: 10px 0 10px 10px;
+}
+
 h1 {
     height:70px;
     line-height:70px;
     font-size:40px;
-    max-width:700px;
-    margin:0 auto;
     padding:0;
     font-weight: normal;
+    float: left;
+    margin: 0;
 }
 
 .container {

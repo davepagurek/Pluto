@@ -3,13 +3,13 @@
 body {
     margin:0;
     padding:0;
-    background-color:#37474F;
+    /*background-color:#37474F;*/
     font-family: 'Roboto', sans-serif;
 }
 
 #users {
     position:absolute;
-    top:0;
+    top:124px;
     left:0;
     right: 340px;
 }
@@ -24,7 +24,7 @@ body {
     border-radius:4px;
     padding:20px;
     background-color:#FFF;
-    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
     display:inline-block;
     width: 300px;
     margin:20px 0 0 20px;
@@ -71,12 +71,12 @@ body {
 
 
 /* Vote maker */
-form {
+.widget {
     background-color:#FFF;
     padding:20px;
     margin-bottom:20px;
     border-radius:4px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
 }
 
 input[type="number"] {
