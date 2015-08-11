@@ -34,8 +34,8 @@ pluto.addModule(require("./plugins/display.js")(pluto));
 //Play music with Spotify
 //pluto.addModule(require("./plugins/spotify.js")(pluto));
 
-//Play music with Muzic
-pluto.addModule(require("./plugins/muzic.js")(pluto));
+//Play music with Muzik
+pluto.addModule(require("./plugins/muzik.js")(pluto));
 
 
 pluto.listen(process.env.PORT || 3000);
