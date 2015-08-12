@@ -6,6 +6,9 @@
 
 <h2>Music Player</h2>
 {{#if nowPlaying}}
-<h3>Currently playing: {{nowPlaying}}</h3>
+<h3>Currently playing: {{nowPlaying.artist}} - {{nowPlaying.name}}</h3>
+{{#if nowPlaying.choice}}
+<h4>{{nowPlaying.choice}}'s choice</h4>
+{{/if}}
 {{/if}}
 <p><a href="/music/play">Shuffle!</a></p>
