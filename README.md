@@ -125,5 +125,9 @@ Text-to-speech requires Festival to work. On linux, run:
 ```
 apt-get install festival
 ```
+MPlayer to play song links. Run:
+```
+apt-get install mplayer
+```
 
 On windows, download and install the binaries from http://downloads.sourceforge.net/e-guidedog/festival-2.1.1-win.7z specifically to the directory `C:\festival` and then add `C:\festival\bin` to your $PATH.
