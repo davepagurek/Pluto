@@ -1,3 +1,4 @@
+GLOBAL._ = require('underscore');
 module.exports = function(config, tests) {
     config = config || {};
 

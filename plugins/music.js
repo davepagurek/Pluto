@@ -4,8 +4,26 @@ module.exports = function(pluto) {
     var title = "Music Player";
 
     var lastPlaying = undefined;
+    var queue = [];
 
     var musicModule = {};
+
+    pluto.get("/music/:artist/album/:album", function(req, response) {
+        pluto.request("https://api.spotify.com/v1/search?q=" + encodeURIComponent(req.params.artist) + "&type=artist", function(res) {
+            if (res.status != 200) {
+                response.render("music.html", {
+                    title: title,
+                    message: "An error occurred: response " + res.status
+                });
+                return;
+            }
+            var albums = res.body.items;
+            var selectedAlbum = _.find(albums, function(item) { return  });
+            console.log("Selected album " + selectedAlbum.name);
+            pluto.request("https://api.spotify.com/v1/albums/" + selectedAlbum.id + "/tracks", function(res) {
+            });
+        });
+    });
 
     pluto.get("/music/play", function(req, response) {
         var selectedUser = {};
