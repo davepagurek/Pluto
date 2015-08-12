@@ -6,7 +6,7 @@ module.exports = {
       var urls = body.url;
       var firstResult = urls[0];
       var url = firstResult[Object.keys(firstResult)[0]];
-      callback(url);
+      callback(Object.keys(firstResult)[0],url);
     });
   }
 }
