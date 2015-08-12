@@ -1,9 +1,8 @@
-var request = require('request');
+var request = require('popsicle');
 module.exports = {
-  getLink : function (song,callback){
-    request('http://muzik.elasticbeanstalk.com/search?songname='+song.name,function(error,response,body){
-      var bodyObj = JSON.parse(body);
-      var urls = bodyObj.url;
+  getLinks : function (song,callback){
+    request('http://muzik.elasticbeanstalk.com/search?songname='+song.name,function(res){
+      var urls = res.body.url;
       var firstResult = urls[0];
       var url = firstResult[Object.keys(firstResult)[0]];
       console.log(url);

@@ -4,7 +4,8 @@ module.exports = function(pluto) {
 
     pluto.addListener("music::play", function(song) {
         muzik.getLink(song.name + " " + song.artist, function(url) {
-            exec("curl " + shellEscape(url), {async: true}, function(code, output) {
+            console.log(url);
+            exec("curl " + url.shellEscape(), {async: true}, function(code, output) {
                 if (code == 0) {
                     console.log("downloaded file");
                 } else {
