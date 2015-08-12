@@ -9,7 +9,10 @@ module.exports = function(pluto) {
     var musicModule = {};
 
     pluto.get("/music/:artist/album/:album", function(req, response) {
-        pluto.request("https://api.spotify.com/v1/search?q=" + encodeURIComponent(req.params.artist) + "&type=artist", function(res) {
+        console.log(req.params);
+        pluto.request("https://api.spotify.com/v1/search?q=" + encodeURIComponent(req.params.artist) +
+            " " + encodeURIComponent(req.params.album) +
+            "&type=artist", function(res) {
             if (res.status != 200) {
                 response.render("music.html", {
                     title: title,
@@ -17,10 +20,32 @@ module.exports = function(pluto) {
                 });
                 return;
             }
-            var albums = res.body.items;
-            var selectedAlbum = _.find(albums, function(item) { return  });
-            console.log("Selected album " + selectedAlbum.name);
-            pluto.request("https://api.spotify.com/v1/albums/" + selectedAlbum.id + "/tracks", function(res) {
+            var album = res.body.artists.items[0];
+            console.log("Selected album: " + album.name);
+            pluto.request("https://api.spotify.com/v1/albums/" + album.id + "/tracks", function(res) {
+                if (res.status != 200) {
+                    response.render("music.html", {
+                        title: title,
+                        message: "An error occurred: response " + res.status
+                    });
+                    return;
+                }
+
+                var songs = res.body.items;
+                queue = songs.map(function(song) {
+                    return {
+                        name: song.name,
+                        album: album.name,
+                        artist: req.params.album //eww :(
+                    }
+                });
+                console.log("Made queue: " + JSON.stringify(queue));
+                lastPlaying = queue.shift;
+                pluto.emitEvent("music::play", lastPlaying);
+                response.render("music.html", {
+                    title: title,
+                    nowPlaying: lastPlaying
+                });
             });
         });
     });
@@ -75,7 +100,7 @@ module.exports = function(pluto) {
                     pluto.emitEvent("music::play", lastPlaying);
                     response.render("music.html", {
                         title: title,
-                        nowPlaying: selectedArtist + " - " + selectedSong.name + " (" + selectedUser.name + "'s choice)"
+                        nowPlaying: lastPlaying
                     });
                 });
             });
@@ -83,17 +108,10 @@ module.exports = function(pluto) {
     });
 
     pluto.get("/music", function(req, res) {
-        if (lastPlaying) {
-            nowPlayingStr = lastPlaying.artist + " - " + lastPlaying.name + " (" + lastPlaying.choice + "'s choice)";
-            res.render("music.html", {
-                title: title,
-                nowPlaying: nowPlayingStr
-            });
-        } else {
-            res.render("music.html", {
-                title: title
-            });
-        }
+        res.render("music.html", {
+            title: title,
+            nowPlaying: lastPlaying
+        });
     });
 
     return musicModule;
