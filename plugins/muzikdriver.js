@@ -1,11 +1,11 @@
 var request = require('popsicle');
 module.exports = {
-  getLinks : function (song,callback){
-    request('http://muzik.elasticbeanstalk.com/search?songname='+song.name,function(res){
-      var urls = res.body.url;
+  getLink : function (song,callback){
+    request('http://muzik.elasticbeanstalk.com/search?songname='+song.name).then(function(res){
+      var body = JSON.parse(res.body);
+      var urls = body.url;
       var firstResult = urls[0];
       var url = firstResult[Object.keys(firstResult)[0]];
-      console.log(url);
       callback(url);
     });
   }

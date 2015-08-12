@@ -3,7 +3,7 @@ module.exports = function(pluto) {
     var player = {};
 
     pluto.addListener("music::play", function(song) {
-        muzik.getLink(song.name + " " + song.artist, function(url) {
+        muzik.getLink(song, function(url) {
             console.log(url);
             exec("curl " + url.shellEscape(), {async: true}, function(code, output) {
                 if (code == 0) {
