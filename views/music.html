@@ -10,5 +10,16 @@
 {{#if nowPlaying.choice}}
 <h4>{{nowPlaying.choice}}'s choice</h4>
 {{/if}}
+
+{{#if queue}}
+<h3>Queue</h3>
+<p><a href="/music/next">Next</a></p>
+<ol>
+  {{#each queue}}
+  <li>{{artist}} - {{name}}</li>
+  {{/each}}
+</ol>
+{{/if}}
+
 {{/if}}
 <p><a href="/music/play">Shuffle!</a></p>

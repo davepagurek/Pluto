@@ -44,7 +44,8 @@ module.exports = function(pluto) {
                 pluto.emitEvent("music::play", lastPlaying);
                 response.render("music.html", {
                     title: title,
-                    nowPlaying: lastPlaying
+                    nowPlaying: lastPlaying,
+                    queue: queue
                 });
             });
         });
@@ -100,7 +101,7 @@ module.exports = function(pluto) {
                         artist: selectedArtist,
                         choice: selectedUser.name
                     };
-                    pluto.emitEvent("music::play", lastPlaying);
+                    pluto.emitEvent("music::play", lastPlaying, queue[0]);
                     response.render("music.html", {
                         title: title,
                         nowPlaying: lastPlaying
@@ -110,10 +111,27 @@ module.exports = function(pluto) {
         });
     });
 
+    pluto.addListener("music::next", function() {
+        lastPlaying = queue.shift();
+        if (lastPlaying) {
+            pluto.emitEvent("music::play", lastPlaying, queue[0]);
+        }
+    });
+
+    pluto.get("/music/next", function(req, res) {
+        pluto.emitEvent("music::next");
+        res.render("music.html", {
+            title: title,
+            nowPlaying: lastPlaying,
+            queue: queue
+        });
+    });
+
     pluto.get("/music", function(req, res) {
         res.render("music.html", {
             title: title,
-            nowPlaying: lastPlaying
+            nowPlaying: lastPlaying,
+            queue: queue
         });
     });
 
