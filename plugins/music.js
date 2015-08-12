@@ -9,10 +9,10 @@ module.exports = function(pluto) {
     var musicModule = {};
 
     pluto.get("/music/:artist/album/:album", function(req, response) {
-        console.log(req.params);
         pluto.request("https://api.spotify.com/v1/search?q=" + encodeURIComponent(req.params.artist) +
             " " + encodeURIComponent(req.params.album) +
-            "&type=artist", function(res) {
+            "&type=album", function(res)
+        {
             if (res.status != 200) {
                 response.render("music.html", {
                     title: title,
@@ -20,7 +20,7 @@ module.exports = function(pluto) {
                 });
                 return;
             }
-            var album = res.body.artists.items[0];
+            var album = res.body.albums.items[0];
             console.log("Selected album: " + album.name);
             pluto.request("https://api.spotify.com/v1/albums/" + album.id + "/tracks", function(res) {
                 if (res.status != 200) {
@@ -36,11 +36,11 @@ module.exports = function(pluto) {
                     return {
                         name: song.name,
                         album: album.name,
-                        artist: req.params.album //eww :(
+                        artist: req.params.artist //eww :(
                     }
                 });
                 console.log("Made queue: " + JSON.stringify(queue));
-                lastPlaying = queue.shift;
+                lastPlaying = queue.shift();
                 pluto.emitEvent("music::play", lastPlaying);
                 response.render("music.html", {
                     title: title,
@@ -58,7 +58,10 @@ module.exports = function(pluto) {
         } while (!selectedUser.artists);
         console.log(selectedUser.name + "'s choice");
         var selectedArtist = selectedUser.artists[Math.floor(Math.random()*selectedUser.artists.length)];
-        pluto.request("https://api.spotify.com/v1/search?q=" + encodeURIComponent(selectedArtist) + "&type=artist", function(res) {
+        pluto.request("https://api.spotify.com/v1/search?q=" +
+            encodeURIComponent(selectedArtist) + "&type=artist",
+            function(res)
+        {
             if (res.status != 200) {
                 response.render("music.html", {
                     title: title,
