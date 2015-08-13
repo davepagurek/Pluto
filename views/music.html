@@ -6,6 +6,7 @@
 
 <h2>Music Player</h2>
 {{#if nowPlaying}}
+<img src="{{nowPlaying.art}}" />
 <h3>Currently playing: {{nowPlaying.artist}} - {{nowPlaying.name}}</h3>
 {{#if nowPlaying.choice}}
 <h4>{{nowPlaying.choice}}'s choice</h4>
@@ -14,9 +15,9 @@
 {{#if queue}}
 <h3>Queue</h3>
 <p><a href="/music/next">Next</a></p>
-<ol>
+<ol class="queue">
   {{#each queue}}
-  <li>{{artist}} - {{name}}</li>
+  <li><img src="{{art}}" /> {{artist}} - {{name}}</li>
   {{/each}}
 </ol>
 {{/if}}

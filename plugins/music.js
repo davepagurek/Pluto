@@ -36,7 +36,9 @@ module.exports = function(pluto) {
                     return {
                         name: song.name,
                         album: album.name,
-                        artist: req.params.artist //eww :(
+                        artist: req.params.artist, //eww :(
+                        id: song.id,
+                        art: album.images[0].url,
                     }
                 });
                 console.log("Made queue: " + JSON.stringify(queue));
@@ -99,6 +101,8 @@ module.exports = function(pluto) {
                         name: selectedSong.name,
                         album: selectedAlbum.name,
                         artist: selectedArtist,
+                        id: selectedSong.id,
+                        art: selectedAlbum.images[0].url,
                         choice: selectedUser.name
                     };
                     pluto.emitEvent("music::play", lastPlaying, queue[0]);
