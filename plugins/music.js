@@ -32,11 +32,12 @@ module.exports = function(pluto) {
                 }
 
                 var songs = res.body.items;
+                artist = songs[0].artists[0].name;
                 queue = songs.map(function(song) {
                     return {
                         name: song.name,
                         album: album.name,
-                        artist: req.params.artist, //eww :(
+                        artist: artist,
                         id: song.id,
                         art: album.images[0].url,
                     }
