@@ -5,22 +5,40 @@
 {{/if}}
 
 <h2>Music Player</h2>
-{{#if nowPlaying}}
+{{#with nowPlaying}}
 <img src="{{nowPlaying.art}}" />
 <h3>Currently playing: {{nowPlaying.artist}} - {{nowPlaying.name}}</h3>
-{{#if nowPlaying.choice}}
-<h4>{{nowPlaying.choice}}'s choice</h4>
-{{/if}}
+<div class="song_list">
+  <div class="song current">
+    <img src="{{art}}" />
+    <div class="info">
+      <h4>{{name}}</h4>
+      <h5>{{album}}</h5>
+      <h5>{{artist}}</h5>
+      {{#if choice}}
+      <h6>{{choice}}'s choice</h6>
+      {{/if}}
+    </div>
+  </div>
+</div>
+{{/with}}
 
-{{#if queue}}
 <h3>Queue</h3>
 <p><a href="/music/next">Next</a></p>
-<ol class="queue">
-  {{#each queue}}
-  <li><img src="{{art}}" /> {{artist}} - {{name}}</li>
-  {{/each}}
-</ol>
-{{/if}}
-
-{{/if}}
 <p><a href="/music/play">Shuffle!</a></p>
+<div class="song_list">
+  {{#if queue}}
+    {{#each queue}}
+    <div class="song">
+      <img src="{{art}}" />
+      <div class="info">
+        <h4>{{name}}</h4>
+        <h5>{{album}}</h5>
+        <h5>{{artist}}</h5>
+      </div>
+    </div>
+    {{/each}}
+  {{else}}
+  <h4>Nothing yet!</h4>
+  {{/if}}
+</div>

@@ -111,3 +111,43 @@ input[type="button"]:hover, input[type="submit"]:hover {
     background-position:center;
     background-image:url(../images/shitty-yuchen.png);
 }
+
+.song_list {
+    margin: 10px auto 40px auto;
+}
+.song {
+    padding: 20px;
+    border-bottom:1px solid #669;
+}
+.song:last-of-type {
+    border-bottom:0;
+}
+.song.current {
+    background-color: #DDF;
+    border:0;
+}
+
+.song img {
+   display:inline-block;
+   vertical-align:top;
+   margin: 0 40px 0 0;
+   width:100%;
+   max-width: 75px;
+}
+
+.song .info {
+    display:inline-block;
+    vertical-align:top;
+}
+.song .info h4 {
+    margin: 5px 0;
+}
+.song .info h5 {
+    margin: 2px 0;
+    font-weight:normal;
+}
+.song .info h6 {
+    margin: 2px 0;
+    font-weight:normal;
+    font-style:italic;
+}
