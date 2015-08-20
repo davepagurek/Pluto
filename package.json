@@ -14,6 +14,7 @@
     "express": "~4.11.0",
     "express-handlebars": "^1.1.0",
     "handlebars": "^2.0.0",
+    "levenshtein": "^1.0.5",
     "mocha": "^2.2.5",
     "morgan": "~1.5.1",
     "multer": "^0.1.8",

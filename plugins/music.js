@@ -22,7 +22,6 @@ module.exports = function(pluto) {
                     return;
                 }
                 var song = res.body.tracks.items[0];
-                console.log(song);
                 queue.push({
                     name: song.name,
                     album: song.album.name,
