@@ -124,7 +124,7 @@ module.exports = function(pluto) {
     pluto.post("/music/play", function(req, res) {
         if (paused) {
             paused = false;
-            pluto.emitEvent("music::unpause");
+            pluto.emitEvent("music::resume");
         } else if (queue.length > 0) {
             paused = false;
             lastPlaying = queue.shift();
