@@ -7,7 +7,7 @@
 <h2>Music Player</h2>
 {{#with nowPlaying}}
 <img src="{{nowPlaying.art}}" />
-<h3>Currently playing: {{nowPlaying.artist}} - {{nowPlaying.name}}</h3>
+<h3>Currently playing</h3>
 <div class="song_list">
   <div class="song current">
     <img src="{{art}}" />
@@ -23,9 +23,35 @@
 </div>
 {{/with}}
 
+<p>
+  {{button "POST" "/music/shuffle" "Shuffle"}}
+  {{#if canPause}}
+    {{button "POST" "/music/pause" "Pause"}}
+  {{/if}}
+  {{#if canPlay}}
+    {{button "POST" "/music/play" "Play"}}
+  {{/if}}
+  {{#if canSkip}}
+    {{button "POST" "/music/next" "Next"}}
+  {{/if}}
+</p>
+<form method="POST" action="/music/add">
+  <div class="value">
+    <label>Artist</label>
+    <input name="artist" type="text" placeholder="Eminem" />
+  </div>
+  <div class="value">
+    <label>Album</label>
+    <input name="album" type="text" placeholder="The Marshall Mathers LP" />
+  </div>
+  <div class="value">
+    <label>Song</label>
+    <input name="song" type="text" placeholder="The Real Slim Shady" />
+  </div>
+  <input type="submit" value="Add to Queue" />
+</form>
+
 <h3>Queue</h3>
-<p><a href="/music/next">Next</a></p>
-<p><a href="/music/play">Shuffle!</a></p>
 <div class="song_list">
   {{#if queue}}
     {{#each queue}}

@@ -10,6 +10,7 @@ module.exports = function(config, tests) {
     var fs = require('fs');
     var express = require("express");
     var exphbs = require('express-handlebars');
+    var handlebars = require('handlebars');
     var multer  = require('multer');
     require('es6-promise').polyfill();
     var request = require('popsicle');
@@ -29,14 +30,39 @@ module.exports = function(config, tests) {
     pluto.storage = {};
     pluto.listeners = {};
 
-    pluto.router = express.Router();
-    pluto.app.set('views', path.join(__dirname, "../views"))
-    pluto.app.engine('.html', exphbs({
+    var hbs = exphbs.create({
+        helpers: {
+            button: function(verb, url, text, classes) {
+                verb = verb.toUpperCase();
+                text = handlebars.escapeExpression(text);
+                text = text || url;
+                classes = classes || "";
+
+                if (verb == "GET") {
+                    if (classes) {
+                        classes = " " + classes;
+                    }
+                    return new handlebars.SafeString(
+                        '<a class="button' + classes + '" href="' + url + '">' + text + '</a>'
+                    );
+                } else {
+                    return new handlebars.SafeString(
+                        '<form class="button_container" action="' + url + '" method="' + verb + '">' +
+                            '<input type="submit" class="' + classes + '" value="' + text + '" />' +
+                            '</form>'
+                    );
+                }
+            }
+        },
         defaultLayout: 'main',
         extname: ".html",
         layoutsDir: path.join(__dirname, "../views/layouts"),
         partialsDir: path.join(__dirname, "../views/partials")
-    }));
+    })
+
+    pluto.router = express.Router();
+    pluto.app.set('views', path.join(__dirname, "../views"))
+    pluto.app.engine('.html', hbs.engine);
     pluto.app.set('view engine', 'handlebars');
 
 
@@ -46,6 +72,12 @@ module.exports = function(config, tests) {
     };
     pluto.post = function() {
         pluto.router.post.apply(pluto.router, arguments);
+    };
+    pluto.delete = function() {
+        pluto.router.delete.apply(pluto.router, arguments);
+    };
+    pluto.put = function() {
+        pluto.router.put.apply(pluto.router, arguments);
     };
 
 

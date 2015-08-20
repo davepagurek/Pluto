@@ -85,8 +85,9 @@ input[type="text"]:hover, input[type="text"]:focus {
     outline:0;
 }
 
-input[type="button"], input[type="submit"] {
+input[type="button"], input[type="submit"], a.button {
     background-color:#3F51B5;
+    display:inline-block;
     color:#FFF;
     padding:15px;
     margin:20px 0 0 0;
@@ -98,10 +99,17 @@ input[type="button"], input[type="submit"] {
     transition: background-color ease 0.3s;
 }
 
-input[type="button"]:hover, input[type="submit"]:hover {
+input[type="button"]:hover, input[type="submit"]:hover, a.button:hover {
     background-color:#5C6BC0;
 }
 
+form.button_container {
+    display:inline-block;
+    padding:0;
+    margin:0;
+    box-shadow:none;
+    border-radius:0;
+}
 
 .icon {
     width:100px;
