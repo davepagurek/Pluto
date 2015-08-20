@@ -147,6 +147,7 @@ module.exports = function(pluto) {
         paused = false;
         lastPlaying = queue.shift();
         if (lastPlaying) {
+            pluto.emitEvent("music::stop");
             pluto.emitEvent("music::play", lastPlaying, queue[0]);
         }
         res.redirect("/music");
