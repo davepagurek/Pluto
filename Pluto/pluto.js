@@ -12,6 +12,7 @@ module.exports = function(config, tests) {
     var exphbs = require('express-handlebars');
     var handlebars = require('handlebars');
     var multer  = require('multer');
+    var sassMiddleware = require('node-sass-middleware');
     require('es6-promise').polyfill();
     var request = require('popsicle');
     require("shelljs/global");
@@ -36,6 +37,7 @@ module.exports = function(config, tests) {
                 verb = verb.toUpperCase();
                 text = handlebars.escapeExpression(text);
                 text = text || url;
+                console.log(classes);
                 classes = classes || "";
 
                 if (verb == "GET") {
@@ -48,10 +50,18 @@ module.exports = function(config, tests) {
                 } else {
                     return new handlebars.SafeString(
                         '<form class="button_container" action="' + url + '" method="' + verb + '">' +
-                            '<input type="submit" class="' + classes + '" value="' + text + '" />' +
-                            '</form>'
+                            '<button type="submit" class="' + classes + '">' +
+                                text +
+                            '</button>' +
+                        '</form>'
                     );
                 }
+            },
+            button_disabled: function(text, classes) {
+                classes = classes || "";
+                return new handlebars.SafeString(
+                    '<button disabled class="' + classes + '">' + text + '</button>'
+                )
             }
         },
         defaultLayout: 'main',
@@ -222,6 +232,14 @@ module.exports = function(config, tests) {
         pluto.app.use(bodyParser.json());
         pluto.app.use(bodyParser.urlencoded({ extended: false }));
         pluto.app.use(cookieParser());
+        pluto.app.use(
+            sassMiddleware({
+                src: path.join(__dirname, '../sass'),
+                dest: path.join(__dirname, '../public/stylesheets'),
+                prefix:  '/stylesheets',
+                debug: true,
+            })
+        );
         pluto.app.use(express.static(path.join(__dirname, '../public')));
         pluto.app.use(multer({
             dest: path.join(__dirname, '../public/uploads'),

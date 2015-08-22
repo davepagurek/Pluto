@@ -143,16 +143,44 @@ module.exports = function(pluto) {
     });
 
     pluto.post("/music/next", function(req, res) {
+        pluto.emitEvent("music::next");
+        res.redirect("/music");
+    });
+
+    pluto.post("/music/queue/delete/:index", function(req, res) {
+        queue.splice(parseInt(req.params.index)-1, 1);
+        res.redirect("/music");
+    });
+
+    pluto.post("/music/queue/move/:index/up", function(req, res) {
+        index = parseInt(req.params.index);
+        elements = queue.splice(index-1, 1);
+        queue.splice(index-2, 0, elements[0])
+        res.redirect("/music#song_" + (index-1));
+    });
+
+    pluto.post("/music/queue/move/:index/down", function(req, res) {
+        index = parseInt(req.params.index);
+        elements = queue.splice(index-1, 1);
+        queue.splice(index, 0, elements[0])
+        res.redirect("/music#song_" + (index+1));
+    });
+
+    pluto.addListener("music::next", function() {
         paused = false;
         lastPlaying = queue.shift();
         if (lastPlaying) {
             pluto.emitEvent("music::stop");
             pluto.emitEvent("music::play", lastPlaying, queue[0]);
         }
-        res.redirect("/music");
     });
 
     pluto.get("/music", function(req, res) {
+        queue.forEach(function(element, index) {
+            element.first = (index == 0);
+            element.last = (index == queue.length-1);
+            element.index = index+1;
+        });
         res.render("music.html", {
             message: lastMessage,
             title: title,

@@ -24,15 +24,15 @@
 {{/with}}
 
 <p>
-  {{button "POST" "/music/shuffle" "Shuffle"}}
+  {{button "POST" "/music/shuffle" "Shuffle" ""}}
   {{#if canPause}}
-    {{button "POST" "/music/pause" "Pause"}}
+    {{button "POST" "/music/pause" "Pause" "primary"}}
   {{/if}}
   {{#if canPlay}}
-    {{button "POST" "/music/play" "Play"}}
+    {{button "POST" "/music/play" "Play" "primary"}}
   {{/if}}
   {{#if canSkip}}
-    {{button "POST" "/music/next" "Next"}}
+    {{button "POST" "/music/next" "Next" ""}}
   {{/if}}
 </p>
 <form method="POST" action="/music/add">
@@ -56,11 +56,38 @@
   {{#if queue}}
     {{#each queue}}
     <div class="song">
+      <a name="song_{{index}}"></a>
       <img src="{{art}}" />
       <div class="info">
-        <h4>{{name}}</h4>
+        <h4>{{index}}. {{name}}</h4>
         <h5>{{album}}</h5>
         <h5>{{artist}}</h5>
+        {{#if choice}}<h6>{{choice}}'s choice</h6>{{/if}}
+        <form method="POST" action="/music/queue/delete/{{index}}" class="button_container">
+          <button type="submit" class="small delete">
+            <i class="fa fa-remove"></i>
+          </button>
+        </form>
+
+        {{#unless @first}}
+        <form method="POST" action="/music/queue/move/{{index}}/up" class="button_container">
+          <button type="submit" class="small">
+            <i class="fa fa-chevron-up"></i>
+          </button>
+        </form>
+        {{else}}
+        {{button_disabled "<i class='fa fa-chevron-up'></i>" "small"}}
+        {{/unless}}
+
+        {{#unless @last}}
+        <form method="POST" action="/music/queue/move/{{index}}/down" class="button_container">
+          <button type="submit" class="small" value="Move down">
+            <i class="fa fa-chevron-down"></i>
+          </button>
+        </form>
+        {{else}}
+        {{button_disabled "<i class='fa fa-chevron-down'></i>" "small"}}
+        {{/unless}}
       </div>
     </div>
     {{/each}}

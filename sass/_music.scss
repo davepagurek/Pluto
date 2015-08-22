@@ -1,0 +1,43 @@
+.song_list {
+    margin: 10px auto 40px auto;
+}
+
+.song {
+    padding: 20px;
+    border-bottom:1px solid #669;
+
+    &:last-of-type {
+        border-bottom:0;
+    }
+
+    &.current {
+        background-color: #DDF;
+        border:0;
+    }
+
+    img {
+        display:inline-block;
+        vertical-align:top;
+        margin: 0 40px 0 0;
+        width:100%;
+        max-width: 75px;
+    }
+
+    .info {
+        display:inline-block;
+        vertical-align:top;
+    }
+
+    h4 {
+        margin: 5px 0;
+    }
+    h5 {
+        margin: 2px 0;
+        font-weight:normal;
+    }
+    h6 {
+        margin: 2px 0;
+        font-weight:normal;
+        font-style:italic;
+    } 
+}
