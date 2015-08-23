@@ -4,30 +4,45 @@ module.exports = function(pluto) {
     var songs = pluto.getStorage("songs");
 
     pluto.addListener("music::play", function(song) {
-        songs[song.id] = songs[song.id] || {ignore: []};
-        muzik.getLink(song, songs[song.id].ignore, function(name,url) {
-            var command = "curl \"" + url.shellEscape()+"\" > song.mp3";
-            exec(command, {async: true}, function(code, output) {
+        var songURL = "storage/songs/" + song.id + ".mp3";
+        var playCommand = "mkfifo /tmp/mplayer-control;mplayer -slave -input file=/tmp/mplayer-control " + songURL;
+        if (test("-f", songURL)) {
+            console.log("Song file exists");
+            exec(playCommand, {async:true},function(code,output){
                 if (code == 0) {
-                    console.log("Downloaded file");
-                    var playCommand = "mkfifo /tmp/mplayer-control;mplayer -slave -input file=/tmp/mplayer-control song.mp3";
-                    exec(playCommand, {async:true},function(code,output){
-                        if (code == 0){
-                            console.log("playing");
-                        }else{
-                            songs[song.id].ignore.push(url);
-                            pluto.saveStorage("songs");
-                            pluto.emitEvent("music::play", song);
-                        }
-                    })
+                    console.log("playing");
                 } else {
-                    console.log("error trying another link");
-                    songs[song.id].ignore.push(url);
-                    pluto.saveStorage("songs");
+                    console.log("error, deleting file");
+                    rm(songURL);
                     pluto.emitEvent("music::play", song);
                 }
-            })
-        });
+            });
+        } else {
+            console.log("getting song urls");
+            songs[song.id] = songs[song.id] || {ignore: []};
+            muzik.getLink(song, songs[song.id].ignore, function(name,url) {
+                var downloadCommand = "curl \"" + url.shellEscape()+"\" > " + songURL;
+                exec(downloadCommand, {async: true}, function(code, output) {
+                    if (code == 0) {
+                        console.log("Downloaded file");
+                        exec(playCommand, {async:true},function(code,output){
+                            if (code == 0) {
+                                console.log("playing");
+                            } else {
+                                songs[song.id].ignore.push(url);
+                                pluto.saveStorage("songs");
+                                pluto.emitEvent("music::play", song);
+                            }
+                        });
+                    } else {
+                        console.log("error trying another link");
+                        songs[song.id].ignore.push(url);
+                        pluto.saveStorage("songs");
+                        pluto.emitEvent("music::play", song);
+                    }
+                })
+            });
+        }
     });
     pluto.addListener("music::pause",function(song){
         var pausecommand = "echo \"pause\"> /tmp/mplayer-control";
