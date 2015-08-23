@@ -22,13 +22,18 @@ module.exports = function(pluto) {
                     return;
                 }
                 var song = res.body.tracks.items[0];
-                queue.push({
+                var element = {
                     name: song.name,
                     album: song.album.name,
                     artist: song.artists[0].name,
                     id: song.id,
                     art: song.album.images[1].url
-                });
+                };
+                if (req.body.position == "next") {
+                    queue.unshift(element);
+                } else {
+                    queue.push(element);
+                }
                 response.redirect("/music");
             });
         } else if (req.body.album) {
@@ -50,7 +55,7 @@ module.exports = function(pluto) {
 
                     var songs = res.body.items;
                     artist = songs[0].artists[0].name;
-                    queue = queue.concat(songs.map(function(song) {
+                    newTracks = songs.map(function(song) {
                         return {
                             name: song.name,
                             album: album.name,
@@ -58,7 +63,12 @@ module.exports = function(pluto) {
                             id: song.id,
                             art: album.images[1].url,
                         }
-                    }));
+                    });
+                    if (req.body.position == "next") {
+                        queue = newTracks.concat(queue);
+                    } else {
+                        queue = queue.concat(newTracks);
+                    }
                     response.redirect("/music");
                 });
             });
@@ -68,7 +78,7 @@ module.exports = function(pluto) {
         }
     });
 
-    pluto.post("/music/shuffle", function(req, response) {
+    pluto.post("/music/shuffle/:position", function(req, response) {
         var selectedUser = {};
         var ids = Object.keys(data);
         do {
@@ -106,14 +116,20 @@ module.exports = function(pluto) {
                     var songs = res.body.items;
                     var selectedSong = songs[Math.floor(Math.random()*songs.length)];
                     console.log("Selected song " + selectedSong.name);
-                    queue.push({
+                    var nextTrack = {
                         name: selectedSong.name,
                         album: selectedAlbum.name,
                         artist: selectedArtist,
                         id: selectedSong.id,
                         art: selectedAlbum.images[1].url,
                         choice: selectedUser.name
-                    });
+                    };
+                    if (req.params.position == "next") {
+                        queue.unshift(nextTrack);
+                    } else {
+                        queue.push(nextTrack);
+                    }
+                    queue.push();
                     response.redirect("/music");
                 });
             });
@@ -148,8 +164,9 @@ module.exports = function(pluto) {
     });
 
     pluto.post("/music/queue/delete/:index", function(req, res) {
-        queue.splice(parseInt(req.params.index)-1, 1);
-        res.redirect("/music");
+        var index = parseInt(req.params.index);
+        queue.splice(index-1, 1);
+        res.redirect("/music#song_" + index);
     });
 
     pluto.post("/music/queue/move/:index/up", function(req, res) {
@@ -177,8 +194,6 @@ module.exports = function(pluto) {
 
     pluto.get("/music", function(req, res) {
         queue.forEach(function(element, index) {
-            element.first = (index == 0);
-            element.last = (index == queue.length-1);
             element.index = index+1;
         });
         res.render("music.html", {

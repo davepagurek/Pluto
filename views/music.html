@@ -24,7 +24,6 @@
 {{/with}}
 
 <p>
-  {{button "POST" "/music/shuffle" "Shuffle" ""}}
   {{#if canPause}}
     {{button "POST" "/music/pause" "Pause" "primary"}}
   {{/if}}
@@ -34,6 +33,8 @@
   {{#if canSkip}}
     {{button "POST" "/music/next" "Next" ""}}
   {{/if}}
+  {{button "POST" "/music/shuffle/next" "Play random song next" ""}}
+  {{button "POST" "/music/shuffle/end" "Add random song to end" ""}}
 </p>
 <form method="POST" action="/music/add">
   <div class="value">
@@ -47,6 +48,14 @@
   <div class="value">
     <label>Song</label>
     <input name="song" type="text" placeholder="The Real Slim Shady" />
+  </div>
+  <div class="value">
+    <label>Play next</label>
+    <input type="radio" name="position" value="next" checked />
+  </div>
+  <div class="value">
+    <label>Add to end</label>
+    <input type="radio" name="position" value="end" />
   </div>
   <input type="submit" value="Add to Queue" />
 </form>

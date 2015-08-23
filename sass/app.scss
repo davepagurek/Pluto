@@ -63,12 +63,31 @@ body {
     box-shadow: 0 4px 10px $color_background_shadow;
 }
 
+.card {
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 10px $color_container_shadow;
+}
+
+.half {
+    box-sizing: border-box;
+    width:45%;
+    display:inline-block;
+    vertical-align:top;
+    &:nth-of-type(even) {
+        margin-left:4%;
+    }
+}
+
 
 /* Headings */
 
 h2 {
     margin:40px 0 15px 0;
     font-size: 30px;
+    &:nth-child(1) {
+        margin-top:0;
+    }
 }
 h3 {
     padding: 0;
