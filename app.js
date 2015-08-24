@@ -11,7 +11,7 @@ pluto.addModule(require("./plugins/users.js")(pluto));
 //Makes a playlist based on user recommended artists
 pluto.addModule(require("./plugins/music.js")(pluto));
 
-
+pluto.addModule(require("./plugins/news_ticker.js")(pluto));
 
 //ACTIONS
 

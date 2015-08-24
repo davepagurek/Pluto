@@ -78,6 +78,31 @@
     margin-top:10px;
 }
 
+/* News Styling */
+#newslist{
+  list-style-type: none;
+  display: flex;
+  flex-wrap:wrap;
+}
+#news{
+  position:absolute;
+  right:300px;
+  width:auto;
+  height:auto;
+  float:left;
+}
+.newselement{
+  background-color: #FFF;
+  width:300px;
+  margin:10px;
+  font-size:2em;
+  border-radius:5%;
+  padding:10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.newselement:hover{
+  background-color:#FEF;
+}
 
 @media all and (max-width:740px) {
     #users {
@@ -105,4 +130,3 @@
         margin: 0 auto;
     }
 }
-
