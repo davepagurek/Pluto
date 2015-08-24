@@ -1,11 +1,14 @@
-//module.exports = function(pluto) {
+module.exports = function(pluto) {
   require("shelljs/global");
   var request = require('popsicle');
-  var newsResult = function (title, content, url, image){
+  var NewsResult = function (title, content, url, image){
     this.title = title;
     this.content = content;
     this.url = url;
     this.image = image;
+    this.printData = function(){
+      console.log(this.title)
+    };
   }
   var resultsArray = [];
   function getResults(query){
@@ -15,11 +18,15 @@
         var body = JSON.parse(res.body);
         for (var x in body.responseData.results){
           var result = body.responseData.results[x];
-          resultsArray.push(new newsResult(result.titleNoFormatting, result.content, result.url,result.image.url));
+          var tempResult = new NewsResult(result.titleNoFormatting, result.content, result.url,result.image.url);
+          tempResult.printData();
+          resultsArray.push(tempResult);
         }
-        debugger;
+        pluto.emitEvent("news::refresh", resultsArray);
       }
     });
   }
-//}
-  getResults("tesla");
+  pluto.addListener("news::refresh", function(data){
+    console.log(data);
+  });
+}
