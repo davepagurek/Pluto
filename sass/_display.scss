@@ -1,14 +1,35 @@
+$small_sidebar:740px;
+$no_sidebar:610px;
+
 #users {
     position:absolute;
     top:124px;
     left:0;
     right: 340px;
+    margin-bottom:20px;
+    @media all and (max-width:$small_sidebar) {
+        right: 240px;
+    }
+    @media all and (max-width:$full_width) {
+        top:74px;
+    }
+    @media all and (max-width:$no_sidebar) {
+        position:static;
+    }
 }
 
 #sidebar {
     width:300px;
     margin:20px;
     float:right;
+    @media all and (max-width:$small_sidebar) {
+        width: 200px;
+    }
+    @media all and (max-width:$no_sidebar) {
+        position:static;
+        width:auto;
+        float:none;
+    }
 }
 
 .user {
@@ -20,34 +41,47 @@
     width: 300px;
     margin:20px 0 0 20px;
     opacity:0.6;
-}
-.user.in {
-    opacity:1;
+
+    &.in {
+        opacity:1;
+    }
+
+    h2 {
+        font-size:25px;
+        margin: 0 0 10px 0;
+        font-size:25px;
+    }
+
+    h3 {
+        font-size:25px;
+        font-weight:normal;
+        text-align:center;
+        margin: 5px 0 0 0;
+        font-size:25px;
+    }
+
+    @media all and (max-width:$no-sidebar) {
+        width:auto;
+        display:block;
+        margin:20px 20px 0 20px;
+    }
+
 }
 
-.user h2, .user h3 {
-    font-size:25px;
-}
-
-.user h2 {
-    margin: 0 0 10px 0;
-    font-size:25px;
-}
-
-.user h3 {
-    font-weight:normal;
-    text-align:center;
-    margin: 5px 0 0 0;
-    font-size:25px;
-}
 
 .column {
     display:inline-block;
     vertical-align:middle;
-}
 
-.column + .column {
-    margin-left:40px;
+    & + .column {
+        margin-left:40px;
+    }
+
+    @media all and (max-width:$no_sidebar) {
+        display:block;
+        margin: 20px 0 0 0;
+        text-align:center;
+    }
 }
 
 
@@ -58,6 +92,9 @@
     background-size:cover;
     background-position:center;
     background-image:url(../images/shitty-yuchen.png);
+    @media all and (max-width: $no_sidebar) {
+        margin: 0 auto;
+    }
 }
 
 
@@ -72,37 +109,7 @@
 
 .line {
     line-height: 40px;
-}
-
-.line + .line {
-    margin-top:10px;
-}
-
-
-@media all and (max-width:740px) {
-    #users {
-        position:static;
-    }
-    #sidebar {
-        position:static;
-        width:auto;
-        float:none;
+    & + .line {
+        margin-top:10px;
     }
 }
-
-@media all and (max-width: 420px) {
-    .user {
-        width:auto;
-        display:block;
-        margin:20px 20px 0 20px;
-    }
-    .column, .column + .column {
-        display:block;
-        margin: 20px 0 0 0;
-        text-align:center;
-    }
-    .icon {
-        margin: 0 auto;
-    }
-}
-

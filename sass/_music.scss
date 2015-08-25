@@ -4,14 +4,17 @@
 
 .song {
     padding: 20px;
-    border-bottom:1px solid #669;
+    border-bottom:1px solid $color_container_secondary;
+    @media all and (max-width:$full_width) {
+        padding: 20px 0;
+    }
 
     &:last-of-type {
         border-bottom:0;
     }
 
     &.current {
-        background-color: #DDF;
+        background-color: $color_container_secondary;
         border:0;
     }
 
@@ -20,12 +23,19 @@
         margin: 0 40px 0 0;
         width:100%;
         width: 75px;
+
+        @media all and (max-width: $full_width) {
+            margin-right: 20px;
+        }
     }
 
     .info {
         display:block;
         margin-left:115px;
         margin-top:-75px;
+        @media all and (max-width: $full_width) {
+            margin-left: 95px;
+        }
     }
 
     h4 {
@@ -39,5 +49,5 @@
         margin: 2px 0;
         font-weight:normal;
         font-style:italic;
-    } 
+    }
 }

@@ -14,28 +14,7 @@
             </div>
         </div>
 
-        <div id="users">
-            {{#each users}}
-            <div class="user{{#in}} in{{/in}}">
-                <div class="column">
-                    <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
-                    <h3>{{#points}}{{.}}{{/points}}{{^points}}0{{/points}} &#9731;</h3>
-                </div>
-                <div class="column info">
-                    <h2>{{name}}</h2>
-                    <p>{{#in}}In{{/in}}{{^in}}Out of{{/in}} the house</p>
-                </div>
-            </div>
-            {{/each}}
-        </div>
         <div id="sidebar">
-            <!--<div class="hal">
-                <div class="light">
-                    <div class="reflection left"></div>
-                    <div class="reflection center"></div>
-                    <div class="reflection right"></div>
-                </div>
-            </div>-->
             <div class="widget">
                 <a href="/users">Manage Users</a>
             </div>
@@ -54,6 +33,21 @@
                     <a href="/vote">Weigh in on the current vote!</a>
                 </div>
             </form>
+        </div>
+
+        <div id="users">
+            {{#each users}}
+            <div class="user{{#in}} in{{/in}}">
+                <div class="column">
+                    <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
+                    <h3>{{#points}}{{.}}{{/points}}{{^points}}0{{/points}} &#9731;</h3>
+                </div>
+                <div class="column info">
+                    <h2>{{name}}</h2>
+                    <p>{{#in}}In{{/in}}{{^in}}Out of{{/in}} the house</p>
+                </div>
+            </div>
+            {{/each}}
         </div>
     </body>
 </html>
