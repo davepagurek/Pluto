@@ -75,6 +75,9 @@ $no_sidebar:610px;
 
     & + .column {
         margin-left:40px;
+        @media all and (max-width:$no_sidebar) {
+            margin-left: 0;
+        }
     }
 
     @media all and (max-width:$no_sidebar) {
