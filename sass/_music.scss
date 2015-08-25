@@ -4,6 +4,7 @@
 
 .song {
     padding: 20px;
+    min-height: 75px;
     border-bottom:1px solid $color_container_secondary;
     @media all and (max-width:$full_width) {
         padding: 20px 0;
@@ -16,6 +17,9 @@
     &.current {
         background-color: $color_container_secondary;
         border:0;
+        @media all and (max-width:$full_width) {
+            background-color:transparent;
+        }
     }
 
     img {
