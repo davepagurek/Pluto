@@ -4,6 +4,17 @@
 
 A home automation framework
 
+<h2>Contributing</h2>
+Create <a href="https://github.com/pahgawk/Pluto/issues">issues</a> for feature requests or bugs.
+
+<h3>Adding features</h3>
+- Make your feature in a new branch `git checkout -b my-feature-branch`
+- Add <a href="#testing">unit tests</a> for testable features
+- Push the branch `git push origin my-feature-branch`
+- Make a pull request from the GitHub site
+- Ask someone to make sure your changes don't break anything existing before merging
+- Wait for the tests to run before merging
+
 <h2>Structure</h2>
 In `app.js`, start Pluto like this:
 ```javascript
