@@ -14,6 +14,33 @@
             </div>
         </div>
 
+        <div id="users">
+            {{#each news}}
+            <div class="card in">
+                <a href="{{url}}">
+                    <div class="newsimagewrapper">
+                        <img class="newsimage" src="{{image}}" />
+                    </div>
+                    <div class="newsparagraphwrapper">
+                        <p class="newsparagraph">{{title}}</p>
+                    </div>
+                </a>
+            </div>
+            {{/each}}
+
+            {{#each users}}
+            <div class="card{{#in}} in{{/in}}">
+                <div class="column">
+                    <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
+                    <h3>{{#points}}{{.}}{{/points}}{{^points}}0{{/points}} &#9731;</h3>
+                </div>
+                <div class="column info">
+                    <h2>{{name}}</h2>
+                    <p>{{#in}}In{{/in}}{{^in}}Out of{{/in}} the house</p>
+                </div>
+            </div>
+            {{/each}}
+        </div>
         <div id="sidebar">
             <div class="widget">
                 <a href="/users">Manage Users</a>
@@ -35,19 +62,5 @@
             </form>
         </div>
 
-        <div id="users">
-            {{#each users}}
-            <div class="user{{#in}} in{{/in}}">
-                <div class="column">
-                    <div class="icon" {{#image}}style="background-image:url(../uploads/{{{.}}})"{{/image}}></div>
-                    <h3>{{#points}}{{.}}{{/points}}{{^points}}0{{/points}} &#9731;</h3>
-                </div>
-                <div class="column info">
-                    <h2>{{name}}</h2>
-                    <p>{{#in}}In{{/in}}{{^in}}Out of{{/in}} the house</p>
-                </div>
-            </div>
-            {{/each}}
-        </div>
     </body>
 </html>
