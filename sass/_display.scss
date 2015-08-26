@@ -67,7 +67,14 @@ $no_sidebar:610px;
     }
 
 }
-
+#trello-board{
+  width:100%;
+  height:40vh;
+}
+#trello-iframe{
+  width:100%;
+  height:100%;
+}
 .card:hover{
   background-color:$color_newsitem_highlighted;
 }
