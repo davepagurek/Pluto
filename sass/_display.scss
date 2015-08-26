@@ -165,17 +165,6 @@ li a{
   color:$color_link_color;
 }
 
-@media all and (max-width:740px) {
-    #users {
-        position:static;
-    }
-    #sidebar {
-        position:static;
-        width:auto;
-        float:none;
-    }
-}
-
 @media all and (max-width: 420px) {
     .user {
         width:auto;
