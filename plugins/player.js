@@ -30,7 +30,9 @@ module.exports = function(pluto) {
             songs[song.id] = songs[song.id] || {ignore: []};
             muzik.getLink(song, songs[song.id].ignore, function(name,url) {
                 request.head(url, function(err, res, body) {
-                    if (err || res.headers['content-type'].indexOf("audio") == -1 || res.headers['content-length']/1000000 < MIN_MB) {
+                    if (err ||
+                        !res.headers['content-type'] || !res.headers['content-length'] ||
+                        res.headers['content-type'].indexOf("audio") == -1 || res.headers['content-length']/1000000 < MIN_MB) {
                         songs[song.id].ignore.push(url);
                         pluto.saveStorage("songs");
                         pluto.emitEvent("music::play", song);
