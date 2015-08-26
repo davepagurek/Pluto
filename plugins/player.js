@@ -1,7 +1,15 @@
 module.exports = function(pluto) {
+    var MIN_MB = 3;
+
     var muzik = require("./muzikdriver.js");
+    var request = require('request');
+    var progress = require('request-progress');
+    var fs = require('fs');
+
     var player = {};
     var songs = pluto.getStorage("songs");
+    var downloading = null;
+    var percent = null;
 
     pluto.addListener("music::play", function(song) {
         var songURL = "storage/songs/" + song.id + ".mp3";
@@ -21,26 +29,42 @@ module.exports = function(pluto) {
             console.log("getting song urls");
             songs[song.id] = songs[song.id] || {ignore: []};
             muzik.getLink(song, songs[song.id].ignore, function(name,url) {
-                var downloadCommand = "curl \"" + url.shellEscape()+"\" > " + songURL;
-                exec(downloadCommand, {async: true}, function(code, output) {
-                    if (code == 0) {
-                        console.log("Downloaded file");
-                        exec(playCommand, {async:true},function(code,output){
-                            if (code == 0) {
-                                console.log("playing");
-                            } else {
-                                songs[song.id].ignore.push(url);
-                                pluto.saveStorage("songs");
-                                pluto.emitEvent("music::play", song);
-                            }
-                        });
-                    } else {
-                        console.log("error trying another link");
+                request.head(url, function(err, res, body) {
+                    if (err ||
+                        !res.headers['content-type'] || !res.headers['content-length'] ||
+                        res.headers['content-type'].indexOf("audio") == -1 || res.headers['content-length']/1000000 < MIN_MB) {
                         songs[song.id].ignore.push(url);
                         pluto.saveStorage("songs");
                         pluto.emitEvent("music::play", song);
+                    } else {
+                        downloading = song;
+                        progress(request(url), {
+                            throttle: 200
+                        })
+                        .on("error", function(err) {
+                            songs[song.id].ignore.push(url);
+                            pluto.saveStorage("songs");
+                            pluto.emitEvent("music::play", song);
+                        })
+                        .on("progress", function(state) {
+                            percent = state.percent;
+                        })
+                        .pipe(fs.createWriteStream(songURL)).on('close', function() {
+                            console.log("Downloaded file");
+                            downloading = null;
+
+                            exec(playCommand, {async:true},function(code,output){
+                                if (code == 0) {
+                                    console.log("playing");
+                                } else {
+                                    songs[song.id].ignore.push(url);
+                                    pluto.saveStorage("songs");
+                                    pluto.emitEvent("music::play", song);
+                                }
+                            });
+                        });
                     }
-                })
+                });
             });
         }
     });
@@ -64,5 +88,15 @@ module.exports = function(pluto) {
             console.log("stop song");
         })
     });
+
+
+    pluto.get("/music/downloading", function(req, res) {
+        res.render("songs_downloading.html", {
+            "song": downloading,
+            "percent": percent,
+            "layout": false
+        });
+    });
+
     return player;
 }
