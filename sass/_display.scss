@@ -32,7 +32,7 @@ $no_sidebar:610px;
     }
 }
 
-.user {
+.card {
     border-radius:4px;
     padding:20px;
     background-color:#FFF;
@@ -68,6 +68,9 @@ $no_sidebar:610px;
 
 }
 
+.card:hover{
+  background-color:$color_newsitem_highlighted;
+}
 
 .column {
     display:inline-block;
@@ -128,19 +131,6 @@ $no_sidebar:610px;
   width:auto;
   height:auto;
   float:left;
-}
-.newselement{
-  display:table;
-  background-color: $color_main_text;
-  width:300px;
-  margin:10px;
-  font-size:1.2em;
-  border-radius:5%;
-  padding:10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-.newselement:hover{
-  background-color:$color_newsitem_highlighted;
 }
 
 .newsimage{
