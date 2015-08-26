@@ -3,10 +3,13 @@ module.exports = function(pluto) {
 
     var muzik = require("./muzikdriver.js");
     var request = require('request');
-    var player = {};
+    var progress = require('request-progress');
     var fs = require('fs');
+
+    var player = {};
     var songs = pluto.getStorage("songs");
-    var downloading = pluto.getStorage("songs_downloading");
+    var downloading = null;
+    var percent = null;
 
     pluto.addListener("music::play", function(song) {
         var songURL = "storage/songs/" + song.id + ".mp3";
@@ -32,10 +35,21 @@ module.exports = function(pluto) {
                         pluto.saveStorage("songs");
                         pluto.emitEvent("music::play", song);
                     } else {
-                        downloading.song = song;
-                        request(url).pipe(fs.createWriteStream(songURL)).on('close', function() {
+                        downloading = song;
+                        progress(request(url), {
+                            throttle: 200
+                        })
+                        .on("error", function(err) {
+                            songs[song.id].ignore.push(url);
+                            pluto.saveStorage("songs");
+                            pluto.emitEvent("music::play", song);
+                        })
+                        .on("progress", function(state) {
+                            percent = state.percent;
+                        })
+                        .pipe(fs.createWriteStream(songURL)).on('close', function() {
                             console.log("Downloaded file");
-                            downloading.song = null;
+                            downloading = null;
 
                             exec(playCommand, {async:true},function(code,output){
                                 if (code == 0) {
@@ -76,7 +90,8 @@ module.exports = function(pluto) {
 
     pluto.get("/music/downloading", function(req, res) {
         res.render("songs_downloading.html", {
-            "song": downloading.song,
+            "song": downloading,
+            "percent": percent,
             "layout": false
         });
     });
