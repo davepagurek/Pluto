@@ -4,7 +4,7 @@ module.exports = function(pluto) {
   var path = require("path");
   var fs = require('fs');
 
-  var data = pluto.getStorage("news");
+  //var data = pluto.getStorage("news");
 
   var newsModule = {};
 
@@ -17,8 +17,8 @@ module.exports = function(pluto) {
       console.log(this.title)
     };
   }
-  var resultsArray = [];
   function getResults(query, callback){
+    var resultsArray = [];
     var baseURL= 'https://ajax.googleapis.com/ajax/services/search/news?v=1.0&q='+encodeURIComponent(query);
     request(baseURL).then(function(res){
       if(res.status == 200){
