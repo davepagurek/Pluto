@@ -25,8 +25,7 @@ module.exports = function(pluto) {
         var body = JSON.parse(res.body);
         for (var x in body.responseData.results){
           var result = body.responseData.results[x];
-          var tempResult = new NewsResult(result.titleNoFormatting, result.content, result.url,result.image.url);
-          tempResult.printData();
+          var tempResult = new NewsResult(result.titleNoFormatting, result.content, decodeURIComponent(result.url),result.image.url);
           resultsArray.push(tempResult);
         }
       }

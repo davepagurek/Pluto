@@ -131,7 +131,7 @@ $no_sidebar:610px;
 }
 .newselement{
   display:table;
-  background-color: #FFF;
+  background-color: $color_main_text;
   width:300px;
   margin:10px;
   font-size:1.2em;
@@ -140,7 +140,7 @@ $no_sidebar:610px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 .newselement:hover{
-  background-color:#BDBDBD;
+  background-color:$color_newsitem_highlighted;
 }
 
 .newsimage{
@@ -159,6 +159,10 @@ $no_sidebar:610px;
 .newsparagraphwrapper{
   float:right;
   width:60%;
+}
+li a{
+  text-decoration:none;
+  color:$color_link_color;
 }
 
 @media all and (max-width:740px) {
