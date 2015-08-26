@@ -15,22 +15,18 @@
         </div>
 
         <div id="users">
-            <div id="news">
-                <ul id = "newslist">
-                    {{#each news}}
-                    <li class="card in">
-                        <a href="{{url}}">
-                            <div class="newsimagewrapper">
-                                <img class="newsimage" src="{{image}}" />
-                            </div>
-                            <div class="newsparagraphwrapper">
-                                <p class="newsparagraph">{{title}}</p>
-                            </div>
-                        </a>
-                    </li>
-                    {{/each}}
-                </ul>
+            {{#each news}}
+            <div class="card in">
+                <a href="{{url}}">
+                    <div class="newsimagewrapper">
+                        <img class="newsimage" src="{{image}}" />
+                    </div>
+                    <div class="newsparagraphwrapper">
+                        <p class="newsparagraph">{{title}}</p>
+                    </div>
+                </a>
             </div>
+            {{/each}}
 
             {{#each users}}
             <div class="card{{#in}} in{{/in}}">
