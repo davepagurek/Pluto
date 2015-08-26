@@ -35,7 +35,7 @@ module.exports = function(pluto) {
   }
 
   pluto.get("/news/:topic", function(req,res){
-    getResults("stallman",function(data){
+    getResults(req.params.topic,function(data){
       res.render("display.html",{
         layout:false,
         news:data

@@ -1,5 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,100,700);
 
+/* Branding */
+
 $color_background: #C5CAE9;
 $color_background_shadow: #9FA8DA;
 $color_main: #3F51B5;
@@ -7,6 +9,7 @@ $color_main_shadow: #303F9F;
 $color_main_highlight: #5C6BC0;
 $color_main_text: #FFF;
 $color_container: #FFF;
+$color_container_secondary: #DDF;
 $color_container_shadow: #E8EAF6;
 $color_input: #E8EAF6;
 $color_input_highlight: #F8FAFF;
@@ -15,6 +18,12 @@ $color_delete_highlight: #F66;
 $color_primary: #48C9B2;
 $color_primary_highlight: #6AEBD4;
 $color_disabled: #DDF;
+
+
+/* Responsive breakpoints */
+
+$small_headings: 600px;
+$full_width: 700px;
 
 
 /* Containers */
@@ -33,8 +42,14 @@ body {
     border-bottom: 4px solid $color_main_shadow;
     box-shadow: 0 4px 10px $color_background_shadow;
     margin-bottom:50px;
+
+    @media all and (max-width:700px) {
+        margin-bottom:0;
+    }
+
     .wrapper {
-        max-width: 700px;
+        max-width: 660px;
+        padding: 0 20px;
         margin: 0 auto;
     }
 
@@ -52,6 +67,10 @@ body {
         font-weight: normal;
         float: left;
         margin: 0;
+
+        @media all and (max-width:$small_headings) {
+            font-size:30px;
+        }
     }
 }
 
@@ -61,6 +80,12 @@ body {
     background-color:$color_container;
     padding:50px;
     box-shadow: 0 4px 10px $color_background_shadow;
+
+    @media all and (max-width:700px) {
+        margin:0;
+        padding:20px;
+        max-width:700px;
+    }
 }
 
 .card {
@@ -88,11 +113,19 @@ h2 {
     &:nth-child(1) {
         margin-top:0;
     }
+
+    @media all and (max-width:$small_headings) {
+        font-size:25px;
+    }
 }
 h3 {
     padding: 0;
     margin: 0 0 15px 0;
     font-size:20px;
+
+    @media all and (max-width:$small_headings) {
+        font-size:18px;
+    }
 }
 
 
