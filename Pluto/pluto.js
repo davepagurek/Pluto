@@ -128,9 +128,14 @@ module.exports = function(config, tests) {
 
     pluto.request = function(url, callback) {
         if (config.testRequests && config.testRequests[url]) {
-            callback({
-                body: config.testRequests[url]
-            });
+            if (typeof config.testRequests[url] == "string") {
+                callback({
+                    body: config.testRequests[url],
+                    status: 200
+                });
+            } else {
+                callback(config.testRequests[url]);
+            }
         } else {
             request(url).then(callback);
         }
