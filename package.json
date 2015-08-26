@@ -21,6 +21,7 @@
     "node-sass-middleware": "^0.9.0",
     "path": "^0.11.14",
     "popsicle": "^0.3.10",
+    "request": "^2.61.0",
     "serve-favicon": "~2.2.0",
     "shelljs": "^0.3.0",
     "should": "^5.0.0",

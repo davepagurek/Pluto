@@ -61,7 +61,16 @@ module.exports = function(config, tests) {
                 classes = classes || "";
                 return new handlebars.SafeString(
                     '<button disabled class="' + classes + '">' + text + '</button>'
-                )
+                );
+            },
+            auto_update: function(id, url, timeout) {
+                return new handlebars.SafeString(
+                    '<script type="text/javascript">' +
+                        'autoUpdate("' + id.replace('"', '\\"') + '", ' +
+                        '"' + url.replace('"', '\\"') + '", ' +
+                        timeout + ');' +
+                    '</script>'
+                );
             }
         },
         defaultLayout: 'main',

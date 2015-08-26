@@ -5,8 +5,9 @@
 {{/if}}
 
 <h2>Music Player</h2>
+<div id="update_container">
+</div>
 {{#with nowPlaying}}
-<img src="{{nowPlaying.art}}" />
 <h3>Currently playing</h3>
 <div class="song_list">
   <div class="song current">
@@ -104,3 +105,7 @@
   <h4>Nothing yet!</h4>
   {{/if}}
 </div>
+
+{{#if nowPlaying}}
+  {{auto_update "update_container" "/music/downloading" 5}}
+{{/if}}
