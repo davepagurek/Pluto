@@ -42,8 +42,15 @@
             {{/each}}
             <br/>
             <div id="trello-board">
-                <iframe id="trello-iframe" src="https://trello.com/b/VgNPAYxd.html"/>
+                <iframe id="trello-iframe" width="100%" height="100%" src="https://trello.com/b/VgNPAYxd.html"/>
             </div>
+            <script>
+                window.setInterval("reloadTrello();",1000);
+                function reloadTrello(){
+                    document.getElementById("trello-iframe").src = document.getElementById("trello-iframe").src + Math.floor(random()%100000);
+                    console.log("reloaded");
+                }
+            </script>
         </div>
         <div id="sidebar">
             <div class="widget">
