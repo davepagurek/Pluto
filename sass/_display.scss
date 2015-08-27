@@ -1,11 +1,12 @@
 $small_sidebar:740px;
 $no_sidebar:610px;
 
-#users {
+#contentpane {
     position:absolute;
     top:124px;
     left:0;
     right: 340px;
+    height:auto;
     margin-bottom:20px;
     @media all and (max-width:$small_sidebar) {
         right: 240px;
