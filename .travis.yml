@@ -1,3 +1,5 @@
+notifications:
+  slack: hyperesidence:HLbkgR7vFPqErueSj8BEbN7H
 language: node_js
 node_js:
   - "0.10"
