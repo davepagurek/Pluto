@@ -15,11 +15,18 @@ Create <a href="https://github.com/pahgawk/Pluto/issues">issues</a> for feature 
 - Ask someone to make sure your changes don't break anything existing before merging
 - Wait for the tests to run before merging
 
+<h3>Pulling changes from master</h3>
+Things are moving fast, so if you need changes from master that were added after you branched off, do this:
+- Commit your changes
+- Update master `git fetch origin`
+- Rebase your feature branch from master `git rebase origin/master`
+- Force push your changes onto your branch `git push origin +my-feature-branch`
+
 <h2>Structure</h2>
 In `app.js`, start Pluto like this:
 ```javascript
 var pluto = require("./Pluto/pluto.js")({
-	"id": "IP"
+    "id": "IP"
 });
 
 //Add modules here
@@ -36,22 +43,25 @@ pluto.addModule(require("./plugins/example-module.js")(pluto));
 
 Modules tend to fall into two categories, <strong>sources</strong> and <strong>responders</strong>.
 
-<h3>Sources</h3>
-Sources listen for inputs and emit events when they happen.
+<h3>Modules</h3>
+Modules can interact with the system in a few ways:
+- Respond to HTTP endpoints
+- Emit events
+- Listen and respond to events
+- Schedule tasks
+- Save storage
 
-A typical source module looks like this:
+A typical module looks like this:
 ```javascript
 module.exports = function(pluto) {
-    var source = {};
-
-    var data = {
-      "counter": 0
-    };
+    var module = {};
 
     //Load existing data
-    pluto.getStorage("example-source", function(error, response) {
-        if (response) data = response;
-    });
+    var data = pluto.getStorage("example-module");
+    if (!data.counter) {
+        data.counter = 0;
+        pluto.saveStorage("example-module");
+    }
 
     //Register a routing handler
     pluto.get("/", function(req, res) {
@@ -64,31 +74,39 @@ module.exports = function(pluto) {
         pluto.emitEvent("example-source::visit", data.counter);
 
         //Save data for the next time the server is restarted
-        pluto.saveStorage("example-source", data, function(err) {
-            if (err) throw err;
-        });
+        pluto.saveStorage("example-source");
     });
-
-    return source;
-};
-```
-
-<h3>Actions</h3>
-Actions listen for events and do things when they are received.
-
-A sample module:
-```javascript
-module.exports = function(pluto) {
-    var action = {};
-
+    
     //Register listeners
     pluto.addListener("example-source::visit", function(visits) {
         console.log("Hello, visitor #" + visits + "!");
     };
 
-    return action;
-}
+    return module;
+};
 ```
+
+<h4>Pluto functions for modules</h4>
+- Respond to HTTP requests with `pluto.get(endpoint, function(req, res){ })`, `pluto.post(endpoint, function(req, res){ })`, or other HTTP verbs. The callback is a regular Express callback.
+- Emit an event with `pluto.emitEvent("module::eventname", data[, data2, data3...])`
+- Listen for and respond to events with `pluto.addListener("module::eventname", function(data[, data2, data3...]){ })`. Remove listeners with `pluto.removeListener("module::eventname", callback)`
+- Say words out loud with `pluto.say(text)`
+- Get storage with `pluto.getStorage(storagename)`. This returns a reference to an object, so editing the object edits it for _all modules_.
+  - Do not reassign the storage to another object as the reference will then be different. Instead, only assign to its properties.
+  - Save the storage to disk with `pluto.saveStorage(storagename)`
+- Set a task to run immediately and then repeatedly on a schedule with `pluto.schedule(hours, callback)`
+- To GET an external resource, use `pluto.request(url, function(response){ })`
+  - Check `response.status` to make sure you got an HTTP 200.
+  - Response data is in `response.body`. Resources that responded with `content-type: application/json` will be automatically parsed into an object, otherwise a string is returned.
+
+<h4>Pluto helpers for views</h4>
+- Unless `layout: false` is set when rendering, views are rendered inside the default Pluto layout. You can add the following properties to the object passed in:
+  - Set the page title with `title: "Page Title"`
+  - Set scripts to include after page content with `scripts: ["/javascripts/script1.js", "/javascripts/script2.js"]`
+- Automatically render buttons with `{{button verb text classes}}`. Clicking the button will navigate to the page URL with the given verb, e.g. `{{button "POST" "Pause Music" ""}}`
+- To make a disabled button, do `{{button_disabled text classes}}`
+- To make a button that doesn't reload the page and instead just sends an AJAX request, do `{{button_ajax verb text classes}}`
+- To automatically replace the contents of an element with AJAX-fetched content every _n_ seconds, use `<div id="replace_container"></div> {{auto_update "replace_container" "/something/replacement" 5}}`
 
 <h2>Testing</h2>
 Pluto can be initialized to use test storage instead of real user storage:
@@ -120,16 +138,38 @@ var pluto = require("../Pluto/pluto.js")({
 });
 ```
 
+Requests made using `pluto.request` can be spoofed:
+```javascript
+var pluto = require("../Pluto/pluto.js")({
+    testRequests: {
+        "https://api.spotify.com/v1/search?q=Slim%20Shady&type=track": {
+            body: {
+                tracks: [ ... ]
+            },
+            status: 200
+        }
+    },
+});
+```
 
-Tests can be run with:
-```
-node_modules/mocha/bin/mocha
+Use supertest to test HTTP endpoints:
+```javascript
+var request = require('supertest');
+it("should sign in a user who is out when they GET /users/io", function(done) {
+    request(pluto.app)
+    .get("/users/io")
+    .expect(200)
+    .end(function(err, res) {
+        if (err) return done(err);
+        assert.equal(pluto.getStorage("users")["test"].in, true)
+        done()
+    });
+});
 ```
 
-Or, if mocha is installed globally (`npm install mocha -g`), simply run:
-```
-mocha
-```
+
+Tests can be run with: `npm test`
+
 
 <h2>Dependencies</h2>
 Text-to-speech requires Festival to work. On linux, run:
