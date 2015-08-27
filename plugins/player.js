@@ -37,15 +37,15 @@ module.exports = function(pluto) {
         //Output format:
         //13.7 (13.7) of 284.0 (04:44.0)
         mplayer.stdout.on('data', function (data) {
-            var match = /\(([\d\.:]+)\) of [\d\.]+ \(([\d\.:]+)\)/.exec(data);
+            var match = /([\d\.:]+) \([\d\.:]+\) of ([\d\.]+) \([\d\.:]+\)/.exec(data);
             if (match) {
                 pluto.emitEvent("player::progress", {
-                    current: match[1],
-                    total: match[2]
+                    current: parseInt(match[1]),
+                    total: parseInt(match[2])
                 });
             }
         });
-    }
+    };
 
     pluto.addListener("music::play", function(song) {
         var songURL = "storage/songs/" + song.id + ".mp3";

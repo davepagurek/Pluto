@@ -2,6 +2,7 @@ module.exports = function(pluto) {
 
     var data = pluto.getStorage("users")||{};
     var title = "Music Player";
+    var scripts = ["/javascripts/music_frontend.js"];
 
     var musicModule = {
         lastPlaying: null,
@@ -15,11 +16,15 @@ module.exports = function(pluto) {
         musicModule.progress = data;
     });
     pluto.get("/music/progress", function(req, res) {
-        res.render("music_playing.html", {
-            nowPlaying: musicModule.lastPlaying,
-            progress: musicModule.progress,
-            layout: false
-        });
+        if (musicModule.lastPlaying) {
+            res.json({
+                total: musicModule.progress.total,
+                current: musicModule.progress.current,
+                playing: !musicModule.paused
+            });
+        } else {
+            res.json({});
+        }
     });
 
     pluto.post("/music/add", function(req, response) {
@@ -259,7 +264,8 @@ module.exports = function(pluto) {
             queue: musicModule.queue,
             canSkip: musicModule.queue.length > 0 && musicModule.lastPlaying,
             canPlay: musicModule.paused || (!musicModule.lastPlaying && musicModule.queue.length > 0),
-            canPause: musicModule.lastPlaying && !musicModule.paused
+            canPause: musicModule.lastPlaying && !musicModule.paused,
+            scripts: scripts
         });
         musicModule.lastMessage = undefined;
     });
