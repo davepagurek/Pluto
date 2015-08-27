@@ -5,10 +5,22 @@ module.exports = function(pluto) {
 
     var musicModule = {
         lastPlaying: null,
+        progress: null,
         queue: [],
         paused: false,
         lastMessage: null
     };
+
+    pluto.addListener("player::progress", function(data) {
+        musicModule.progress = data;
+    });
+    pluto.get("/music/progress", function(req, res) {
+        res.render("music_playing.html", {
+            nowPlaying: musicModule.lastPlaying,
+            progress: musicModule.progress,
+            layout: false
+        });
+    });
 
     pluto.post("/music/add", function(req, response) {
         if (req.body.song) {
@@ -124,7 +136,7 @@ module.exports = function(pluto) {
                     response.redirect("/music");
                     return;
                 }
-                if (!res.body.albums || !res.body.albums.items || res.body.albums.items.length == 0) {
+                if (!res.body.items || res.body.items.length == 0) {
                     musicModule.lastMessage = "Sorry, no results were found.";
                     response.redirect("/music");
                     return;
