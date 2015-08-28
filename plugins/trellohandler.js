@@ -1,4 +1,9 @@
-//Note this is a script and not a plugin for pluto
-function refreshBoardAsset(){
-
+module.exports = function(pluto){
+  var trelloModule = {};
+  pluto.get("/board",function(req,res){
+    res.render("trello.html",{
+        "layout":false
+    });
+  });
+  return trelloModule;
 }
