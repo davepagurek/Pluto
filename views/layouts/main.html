@@ -4,6 +4,7 @@
         <title>Pluto - {{title}}</title>
         <link rel='stylesheet' type='text/css' href='/stylesheets/app.css' />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <meta name='viewport' content='width=device-width' />
         <script type="text/javascript" src="/javascripts/helpers.js"></script>
     </head>
     <body>
@@ -18,5 +19,9 @@
         <div class='container'>
             {{{body}}}
         </div>
+
+        {{#each scripts}}
+        <script type="text/javascript" src="{{{.}}}"></script>
+        {{/each}}
     </body>
 </html>

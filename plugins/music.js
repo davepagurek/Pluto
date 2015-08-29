@@ -2,13 +2,30 @@ module.exports = function(pluto) {
 
     var data = pluto.getStorage("users")||{};
     var title = "Music Player";
+    var scripts = ["/javascripts/music_frontend.js"];
 
     var musicModule = {
         lastPlaying: null,
+        progress: null,
         queue: [],
         paused: false,
         lastMessage: null
     };
+
+    pluto.addListener("player::progress", function(data) {
+        musicModule.progress = data;
+    });
+    pluto.get("/music/progress", function(req, res) {
+        if (musicModule.lastPlaying && musicModule.progress) {
+            res.json({
+                total: musicModule.progress.total,
+                current: musicModule.progress.current,
+                playing: !musicModule.paused
+            });
+        } else {
+            res.json({});
+        }
+    });
 
     pluto.post("/music/add", function(req, response) {
         if (req.body.song) {
@@ -124,7 +141,7 @@ module.exports = function(pluto) {
                     response.redirect("/music");
                     return;
                 }
-                if (!res.body.albums || !res.body.albums.items || res.body.albums.items.length == 0) {
+                if (!res.body.items || res.body.items.length == 0) {
                     musicModule.lastMessage = "Sorry, no results were found.";
                     response.redirect("/music");
                     return;
@@ -177,7 +194,7 @@ module.exports = function(pluto) {
             musicModule.lastPlaying = musicModule.queue.shift();
             pluto.emitEvent("music::play", musicModule.lastPlaying, musicModule.queue[0]);
         } else {
-            musicModule.lastMessage = "Nothing in the musicModule.queue to play!";
+            musicModule.lastMessage = "Nothing in the queue to play!";
         }
         res.redirect("/music");
     });
@@ -247,7 +264,8 @@ module.exports = function(pluto) {
             queue: musicModule.queue,
             canSkip: musicModule.queue.length > 0 && musicModule.lastPlaying,
             canPlay: musicModule.paused || (!musicModule.lastPlaying && musicModule.queue.length > 0),
-            canPause: musicModule.lastPlaying && !musicModule.paused
+            canPause: musicModule.lastPlaying && !musicModule.paused,
+            scripts: scripts
         });
         musicModule.lastMessage = undefined;
     });

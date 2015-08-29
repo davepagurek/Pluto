@@ -31,6 +31,16 @@ module.exports = function(config, tests) {
     pluto.storage = {};
     pluto.listeners = {};
 
+    var makeId = function(length) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for( var i=0; i < length; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    };
+
     var hbs = exphbs.create({
         helpers: {
             button: function(verb, url, text, classes) {
@@ -56,6 +66,26 @@ module.exports = function(config, tests) {
                         '</form>'
                     );
                 }
+            },
+            ajax_button: function(verb, url, text, classes) {
+                verb = verb.toUpperCase();
+                text = handlebars.escapeExpression(text);
+                text = text || url;
+                console.log(classes);
+                classes = classes || "";
+                id = makeId(15);
+                if (classes) {
+                    classes = " " + classes;
+                }
+
+                return new handlebars.SafeString(
+                    '<a class="button' + classes + '" id="' + id + '">' + text + '</a>' +
+                    '<script type="text/javascript">' +
+                        'document.getElementById("' + id + '").addEventListener("click", function() { ' +
+                            'ajax("' + verb + '", "' + url + '"); ' +
+                        ' });' +
+                    '</script>'
+                );
             },
             button_disabled: function(text, classes) {
                 classes = classes || "";
@@ -114,16 +144,6 @@ module.exports = function(config, tests) {
                 return id;
             }
         }
-    };
-
-    var makeId = function(length) {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-        for( var i=0; i < length; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return text;
     };
 
     pluto.request = function(url, callback) {
