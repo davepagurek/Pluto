@@ -16,7 +16,7 @@ module.exports = function(pluto) {
         musicModule.progress = data;
     });
     pluto.get("/music/progress", function(req, res) {
-        if (musicModule.lastPlaying) {
+        if (musicModule.lastPlaying && musicModule.progress) {
             res.json({
                 total: musicModule.progress.total,
                 current: musicModule.progress.current,
