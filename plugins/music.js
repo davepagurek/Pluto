@@ -194,7 +194,7 @@ module.exports = function(pluto) {
             musicModule.lastPlaying = musicModule.queue.shift();
             pluto.emitEvent("music::play", musicModule.lastPlaying, musicModule.queue[0]);
         } else {
-            musicModule.lastMessage = "Nothing in the musicModule.queue to play!";
+            musicModule.lastMessage = "Nothing in the queue to play!";
         }
         res.redirect("/music");
     });
