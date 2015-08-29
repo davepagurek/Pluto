@@ -11,6 +11,7 @@ module.exports = function(pluto) {
     var songs = pluto.getStorage("songs");
     var downloading = null;
     var downloadPercent = null;
+    var downloadError = null;
     var mplayer = null;
     var sentStop = false;
 
@@ -48,20 +49,25 @@ module.exports = function(pluto) {
     };
 
     pluto.addListener("music::play", function(song) {
+        downloadError = null;
         var songURL = "storage/songs/" + song.id + ".mp3";
-        var playCommand = "mkfifo /tmp/mplayer-control; mplayer -slave -input file=/tmp/mplayer-control " + songURL;
         if (test("-f", songURL)) {
             console.log("Song file exists");
             playSong(songURL, song);
         } else {
             console.log("getting song urls");
             songs[song.id] = songs[song.id] || {ignore: []};
-            muzik.getLink(song, songs[song.id].ignore, function(name,url) {
+            pluto.emitEvent("muzik::get_link", song, songs[song.id].ignore, function(err,url) {
+                if (err) {
+                    downloadError = e;
+                    return;
+                }
                 request.head(url, function(err, res, body) {
                     if (err ||
                         !res.headers['content-type'] || !res.headers['content-length'] ||
                         res.headers['content-type'].indexOf("audio") == -1 || res.headers['content-length']/1000000 < MIN_MB) {
                         songs[song.id].ignore.push(url);
+                        console.log("Wrong format/not good enough:", res.headers['content-type']);
                         pluto.saveStorage("songs");
                         pluto.emitEvent("music::play", song);
                     } else {
@@ -110,6 +116,7 @@ module.exports = function(pluto) {
 
     pluto.get("/music/downloading", function(req, res) {
         res.render("songs_downloading.html", {
+            "error": downloadError,
             "song": downloading,
             "percent": downloadPercent,
             "layout": false

@@ -2,8 +2,6 @@ var pluto = require("./Pluto/pluto.js")({
 	"id": "IP"
 });
 
-// SOURCES
-
 //Keeps track of if users are IN or OUT by.
 //listening for GET requests to /user/io
 pluto.addModule(require("./plugins/users.js")(pluto));
@@ -12,8 +10,6 @@ pluto.addModule(require("./plugins/users.js")(pluto));
 pluto.addModule(require("./plugins/music.js")(pluto));
 
 pluto.addModule(require("./plugins/news_ticker.js")(pluto));
-
-//ACTIONS
 
 //Outputs "Hello, <username>!" in the console
 //when a new user enters
@@ -34,8 +30,11 @@ pluto.addModule(require("./plugins/display.js")(pluto));
 //Play music with Spotify
 //pluto.addModule(require("./plugins/spotify.js")(pluto));
 
-//Play music with Muzik
+//Play music with mplayer
 pluto.addModule(require("./plugins/player.js")(pluto));
+
+//Get music downloads from Muzik
+pluto.addModule(require("./plugins/muzikdriver.js")(pluto));
 
 
 pluto.listen(process.env.PORT || 3000);
