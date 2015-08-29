@@ -50,6 +50,8 @@ module.exports = function(pluto) {
 
     pluto.addListener("music::play", function(song) {
         downloadError = null;
+        downloadPercent = null;
+        downloading = song;
         var songURL = "storage/songs/" + song.id + ".mp3";
         if (test("-f", songURL)) {
             console.log("Song file exists");
@@ -59,7 +61,7 @@ module.exports = function(pluto) {
             songs[song.id] = songs[song.id] || {ignore: []};
             pluto.emitEvent("muzik::get_link", song, songs[song.id].ignore, function(err,url) {
                 if (err) {
-                    downloadError = e;
+                    downloadError = err;
                     return;
                 }
                 request.head(url, function(err, res, body) {
@@ -71,7 +73,6 @@ module.exports = function(pluto) {
                         pluto.saveStorage("songs");
                         pluto.emitEvent("music::play", song);
                     } else {
-                        downloading = song;
                         console.log("Starting download");
                         progress(request(url), {
                             throttle: 200
