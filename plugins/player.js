@@ -9,6 +9,7 @@ module.exports = function(pluto) {
 
     var player = {};
     var songs = pluto.getStorage("songs");
+    var attempts = 0;
     var downloading = null;
     var downloadPercent = null;
     var downloadError = null;
@@ -52,6 +53,7 @@ module.exports = function(pluto) {
         downloadError = null;
         downloadPercent = null;
         downloading = song;
+        attempts++;
         var songURL = "storage/songs/" + song.id + ".mp3";
         if (test("-f", songURL)) {
             console.log("Song file exists");
@@ -62,6 +64,7 @@ module.exports = function(pluto) {
             pluto.emitEvent("muzik::get_link", song, songs[song.id].ignore, function(err,url) {
                 if (err) {
                     downloadError = err;
+                    attempts = 0;
                     return;
                 }
                 request.head(url, function(err, res, body) {
@@ -69,7 +72,8 @@ module.exports = function(pluto) {
                         !res.headers['content-type'] || !res.headers['content-length'] ||
                         res.headers['content-type'].indexOf("audio") == -1 || res.headers['content-length']/1000000 < MIN_MB) {
                         songs[song.id].ignore.push(url);
-                        console.log("Wrong format/not good enough:", res.headers['content-type']);
+                        if (!err) console.log("Wrong format/not good enough:", res.headers['content-type']);
+                        if (err) console.log("Got error: " + err);
                         pluto.saveStorage("songs");
                         pluto.emitEvent("music::play", song);
                     } else {
@@ -109,6 +113,7 @@ module.exports = function(pluto) {
 
     pluto.addListener("music::stop",function(){
         if (!mplayer) return;
+        attempts = 0;
         console.log("Stopping");
         sentStop = true;
         mplayer.stdin.write("stop\n");
@@ -117,10 +122,11 @@ module.exports = function(pluto) {
 
     pluto.get("/music/downloading", function(req, res) {
         res.render("songs_downloading.html", {
-            "error": downloadError,
-            "song": downloading,
-            "percent": downloadPercent,
-            "layout": false
+            error: downloadError,
+            attempts: attempts,
+            song: downloading,
+            percent: downloadPercent,
+            layout: false
         });
     });
 
