@@ -9,8 +9,10 @@ module.exports = function(pluto) {
 
     var player = {};
     var songs = pluto.getStorage("songs");
+    var attempts = 0;
     var downloading = null;
     var downloadPercent = null;
+    var downloadError = null;
     var mplayer = null;
     var sentStop = false;
 
@@ -48,24 +50,35 @@ module.exports = function(pluto) {
     };
 
     pluto.addListener("music::play", function(song) {
+        downloadError = null;
+        downloadPercent = null;
+        downloading = song;
+        attempts++;
         var songURL = "storage/songs/" + song.id + ".mp3";
-        var playCommand = "mkfifo /tmp/mplayer-control; mplayer -slave -input file=/tmp/mplayer-control " + songURL;
         if (test("-f", songURL)) {
             console.log("Song file exists");
+            downloading = null;
             playSong(songURL, song);
         } else {
             console.log("getting song urls");
             songs[song.id] = songs[song.id] || {ignore: []};
-            muzik.getLink(song, songs[song.id].ignore, function(name,url) {
+            pluto.emitEvent("muzik::get_link", song, songs[song.id].ignore, function(err,url) {
+                if (err) {
+                    downloadError = err;
+                    pluto.emitEvent("player::download_error", err);
+                    attempts = 0;
+                    return;
+                }
                 request.head(url, function(err, res, body) {
                     if (err ||
                         !res.headers['content-type'] || !res.headers['content-length'] ||
                         res.headers['content-type'].indexOf("audio") == -1 || res.headers['content-length']/1000000 < MIN_MB) {
                         songs[song.id].ignore.push(url);
+                        if (!err) console.log("Wrong format/not good enough:", res.headers['content-type']);
+                        if (err) console.log("Got error: " + err);
                         pluto.saveStorage("songs");
                         pluto.emitEvent("music::play", song);
                     } else {
-                        downloading = song;
                         console.log("Starting download");
                         progress(request(url), {
                             throttle: 200
@@ -102,6 +115,7 @@ module.exports = function(pluto) {
 
     pluto.addListener("music::stop",function(){
         if (!mplayer) return;
+        attempts = 0;
         console.log("Stopping");
         sentStop = true;
         mplayer.stdin.write("stop\n");
@@ -110,9 +124,11 @@ module.exports = function(pluto) {
 
     pluto.get("/music/downloading", function(req, res) {
         res.render("songs_downloading.html", {
-            "song": downloading,
-            "percent": downloadPercent,
-            "layout": false
+            error: downloadError,
+            attempts: attempts,
+            song: downloading,
+            percent: downloadPercent,
+            layout: false
         });
     });
 

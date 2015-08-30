@@ -33,12 +33,14 @@ pluto.addModule(require("./plugins/display.js")(pluto));
 //Play music with mplayer
 pluto.addModule(require("./plugins/player.js")(pluto));
 
+<<<<<<< HEAD
 //Open a trello board
 pluto.addModule(require("./plugins/trellohandler.js")(pluto));
-
+=======
 //Get music downloads from Muzik
 pluto.addModule(require("./plugins/muzikdriver.js")(pluto));
 
+>>>>>>> origin/master
 
 pluto.listen(process.env.PORT || 3000);
 
