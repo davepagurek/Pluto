@@ -1,5 +1,15 @@
-{{#if song}}
-<div class="downloading">
-    <p>Downloading {{song.artist}} - {{song.name}} ({{percent}}%)</p>
+{{#if error}}
+<div class="error">
+    <p>{{error}}</p>
 </div>
+{{else}}
+    {{#if song}}
+    <div class="downloading">
+        {{#if percent}}
+        <p>Downloading {{song.artist}} - {{song.name}} ({{percent}}%)</p>
+        {{else}}
+        <p>Fetching links for {{song.artist}} - {{song.name}} (Attempt {{attempts}})</p>
+        {{/if}}
+    </div>
+    {{/if}}
 {{/if}}

@@ -9,11 +9,13 @@ module.exports = function(pluto) {
         progress: null,
         queue: [],
         paused: false,
-        lastMessage: null
+        lastMessage: null,
+        downloading: false
     };
 
     pluto.addListener("player::progress", function(data) {
         musicModule.progress = data;
+        musicModule.downloading = false;
     });
     pluto.get("/music/progress", function(req, res) {
         if (musicModule.lastPlaying && musicModule.progress) {
@@ -185,11 +187,19 @@ module.exports = function(pluto) {
         });
     });
 
+    pluto.addListener("player::download_error", function(err) {
+        musicModule.downloading = false;
+        musicModule.progress = null;
+    });
+
     pluto.post("/music/play", function(req, res) {
+        if (musicModule.downloading) return; // Do nothing when waiting for download
         if (musicModule.paused) {
             musicModule.paused = false;
             pluto.emitEvent("music::resume");
         } else if (musicModule.queue.length > 0) {
+            musicModule.progress = null;
+            musicModule.downloading = true;
             musicModule.paused = false;
             musicModule.lastPlaying = musicModule.queue.shift();
             pluto.emitEvent("music::play", musicModule.lastPlaying, musicModule.queue[0]);
@@ -200,6 +210,7 @@ module.exports = function(pluto) {
     });
 
     pluto.post("/music/pause", function(req, res) {
+        if (musicModule.downloading) return; // Do nothing when waiting for download
         if (musicModule.lastPlaying) {
             musicModule.paused = true;
             pluto.emitEvent("music::pause");
@@ -246,6 +257,7 @@ module.exports = function(pluto) {
 
     pluto.addListener("music::next", function() {
         musicModule.paused = false;
+        musicModule.progress = null;
         musicModule.lastPlaying = musicModule.queue.shift();
         if (musicModule.lastPlaying) {
             pluto.emitEvent("music::stop");

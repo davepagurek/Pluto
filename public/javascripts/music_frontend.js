@@ -34,6 +34,7 @@ var updateProgressFromServer = function() {
 
 if (songProgressContainer) {
     setInterval(updateProgressFromServer, 10000);
+    setTimeout(updateProgressFromServer, 2000);
     updateProgressFromServer();
 }
 
