@@ -57,6 +57,7 @@ module.exports = function(pluto) {
         var songURL = "storage/songs/" + song.id + ".mp3";
         if (test("-f", songURL)) {
             console.log("Song file exists");
+            downloading = null;
             playSong(songURL, song);
         } else {
             console.log("getting song urls");
@@ -64,6 +65,7 @@ module.exports = function(pluto) {
             pluto.emitEvent("muzik::get_link", song, songs[song.id].ignore, function(err,url) {
                 if (err) {
                     downloadError = err;
+                    pluto.emitEvent("player::download_error", err);
                     attempts = 0;
                     return;
                 }
