@@ -47,7 +47,7 @@ describe("player", function(){
 
         pluto.addListener("music::next", function() {
             try {
-                assert.equal(Math.floor(songs["test"].lastPlayed/10000), Math.floor(Date.now()/10000));
+                assert.equal(Math.floor(songs["test"].lastPlayed/100000), Math.floor(Date.now()/100000));
                 assert.equal(removedList.length, 0);
                 done();
             } catch (err) {
@@ -65,7 +65,7 @@ describe("player", function(){
                 songs: {
                     test: {
                         ignore: [],
-                        url: "test/data/test-broken.mp3"
+                        url: "test/data/test-broken.html"
                     }
                 }
             }
@@ -179,11 +179,11 @@ describe("player", function(){
             done(new Error(err));
         });
 
-        pluto.addListener("player::progress", function(data) {
+        pluto.addListener("music::next", function(data) {
             pluto.emitEvent("music::stop");
             try {
                 assert.equal(songs["test"].url, "storage/songs/test.mp3");
-                assert.equal(Math.floor(songs["test"].lastPlayed/10000), Math.floor(Date.now()/10000));
+                assert.equal(Math.floor(songs["test"].lastPlayed/100000), Math.floor(Date.now()/100000));
                 done();
             } catch (err) {
                 done(err);
@@ -200,12 +200,12 @@ describe("player", function(){
 
         var download = nock("http://test.com")
         .get("/test.mp3")
-        .replyWithFile(200, __dirname + "/data/test.mp3", {
+        .replyWithFile(200, __dirname + "/data/test-broken.html", {
             "Content-Length": 4000000,
             "Content-Type": "text/html"
         })
         .head("/test.mp3")
-        .replyWithFile(200, __dirname + "/data/test.mp3", {
+        .replyWithFile(200, __dirname + "/data/test-broken.html", {
             "Content-Length": 4000000,
             "Content-Type": "text/html"
         });
@@ -270,7 +270,12 @@ describe("player", function(){
                 done();
             } else {
                 linksRequested = true;
-                callback(null, "http://test.com/test.mp3");
+                try {
+                    callback(null, "http://test.com/test.mp3");
+                } catch (err) {
+                    console.log("got error: " + err);
+                    throw err;
+                }
             }
         });
 

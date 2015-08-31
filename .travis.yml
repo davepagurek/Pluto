@@ -2,7 +2,7 @@ notifications:
   slack: hyperesidence:HLbkgR7vFPqErueSj8BEbN7H
 language: node_js
 node_js:
-  - "0.10"
+  - "0.12"
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y mplayer
+  - sudo apt-get install -y mplayer2

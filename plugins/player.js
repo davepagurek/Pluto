@@ -16,6 +16,7 @@ module.exports = function(pluto) {
     var mplayer = null;
     var sentStop = false;
     var badSong = false;
+    var songProgress = null;
 
     player.handleBadSong = function(song, url) {
         console.log("Can't play file");
@@ -29,18 +30,23 @@ module.exports = function(pluto) {
     player.playSong = function(song, url) {
         mplayer = spawn( 'mplayer', [ '-slave', songs[song.id].url ] );
         mplayer.on('exit', function (response) {
-            songProgress = null;
             mplayer = null;
             if (response == 0) {
                 console.log("Finished playing");
                 if (sentStop) {
                     sentStop = false;
+                    songProgress = null;
                 } else if (badSong) {
                     badSong = false;
+                    songProgress = null;
+                } else if (!songProgress) {
+                    player.handleBadSong(song, url);
                 } else {
+                    songProgress = null;
                     pluto.emitEvent("music::next");
                 }
             } else {
+                songProgress = null;
                 player.handleBadSong(song, url);
             }
         });
@@ -49,18 +55,21 @@ module.exports = function(pluto) {
         //13.7 (13.7) of 284.0 (04:44.0)
         mplayer.stdout.on('data', function (data) {
             if (sentStop) return;
+            data = "" + data;
             var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([\d\.]+) \([\d\.:]+\)/.exec(data);
             if (progressMatch) {
-                pluto.emitEvent("player::progress", {
+                songProgress = {
                     current: parseInt(progressMatch[1]),
                     total: parseInt(progressMatch[2])
-                });
+                };
+                pluto.emitEvent("player::progress", songProgress);
                 return;
             }
 
-            var decodeErrorMatch = /decoding for stream .+ failed/i.exec(data);
+            var decodeErrorMatch = /(?:decoding for stream .+ failed)|(?:no sound)/i.exec(data);
             if (decodeErrorMatch) {
                 player.handleBadSong(song, url);
+                return;
             }
         });
     };
@@ -115,6 +124,7 @@ module.exports = function(pluto) {
                     attempts = 0;
                     return;
                 }
+                console.log("Requesting headers");
                 request.head(url, function(err, res, body) {
                     if (err ||
                         !res.headers['content-type'] || !res.headers['content-length'] ||
