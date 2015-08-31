@@ -259,8 +259,8 @@ module.exports = function(pluto) {
         musicModule.paused = false;
         musicModule.progress = null;
         musicModule.lastPlaying = musicModule.queue.shift();
+        pluto.emitEvent("music::stop");
         if (musicModule.lastPlaying) {
-            pluto.emitEvent("music::stop");
             pluto.emitEvent("music::play", musicModule.lastPlaying, musicModule.queue[0]);
         }
     });
