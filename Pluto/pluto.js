@@ -47,7 +47,6 @@ module.exports = function(config, tests) {
                 verb = verb.toUpperCase();
                 text = handlebars.escapeExpression(text);
                 text = text || url;
-                console.log(classes);
                 classes = classes || "";
 
                 if (verb == "GET") {
@@ -71,7 +70,6 @@ module.exports = function(config, tests) {
                 verb = verb.toUpperCase();
                 text = handlebars.escapeExpression(text);
                 text = text || url;
-                console.log(classes);
                 classes = classes || "";
                 id = makeId(15);
                 if (classes) {

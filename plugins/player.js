@@ -16,7 +16,6 @@ module.exports = function(pluto) {
     var mplayer = null;
     var sentStop = false;
     var badSong = false;
-    var sentQuit = false;
 
     player.handleBadSong = function(song, url) {
         console.log("Can't play file");
@@ -38,8 +37,6 @@ module.exports = function(pluto) {
                     sentStop = false;
                 } else if (badSong) {
                     badSong = false;
-                } else if (sentQuit) {
-                    sentQuit = false;
                 } else {
                     pluto.emitEvent("music::next");
                 }
@@ -51,6 +48,7 @@ module.exports = function(pluto) {
         //Output format:
         //13.7 (13.7) of 284.0 (04:44.0)
         mplayer.stdout.on('data', function (data) {
+            if (sentStop) return;
             var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([\d\.]+) \([\d\.:]+\)/.exec(data);
             if (progressMatch) {
                 pluto.emitEvent("player::progress", {
@@ -66,6 +64,31 @@ module.exports = function(pluto) {
             }
         });
     };
+
+    pluto.addListener("music::retry", function(song) {
+        if (songs[song.id].url) {
+            rm(songs[song.id].url);
+            delete songs[song.id].url;
+        }
+        if (songs[song.id].from) {
+            songs[song.id].ignore.push(songs[song.id].from);
+            delete songs[song.id].from;
+        }
+        delete songs[song.id].from;
+        pluto.emitEvent("music::play", song);
+    });
+
+    pluto.addListener("music::reset", function(song) {
+        if (songs[song.id].url) {
+            rm(songs[song.id].url);
+            delete songs[song.id].url;
+        }
+        if (songs[song.id].ignore) {
+            songs[song.id].ignore = [];
+        }
+        delete songs[song.id].from;
+        pluto.emitEvent("music::play", song);
+    });
 
     pluto.addListener("music::play", function(song) {
         downloadError = null;
@@ -104,6 +127,7 @@ module.exports = function(pluto) {
                     } else {
                         console.log("Starting download");
                         var songURL = "storage/songs/" + song.id + ".mp3";
+                        console.log(url);
                         var downloader = progress(request(url), {
                             throttle: 200
                         });
@@ -121,7 +145,6 @@ module.exports = function(pluto) {
                         })
                         .on("progress", function(state) {
                             downloadPercent = state.percent;
-                            console.log(state.percent);
                         })
                         .pipe(fs.createWriteStream(songURL)).on('close', function() {
                             if (!test("-f", songURL)) return;
@@ -129,6 +152,7 @@ module.exports = function(pluto) {
                             pluto.removeListener("music::stop", cancelDownload);
                             downloading = null;
                             songs[song.id].url = songURL;
+                            songs[song.id].from = url;
                             pluto.saveStorage("songs");
                             player.playSong(song, url);
                         });
@@ -155,7 +179,6 @@ module.exports = function(pluto) {
         console.log("Stopping");
         sentStop = true;
         mplayer.stdin.write("stop\n");
-        sentQuit = true;
         mplayer.stdin.write("quit\n");
     });
 
