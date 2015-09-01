@@ -33,6 +33,9 @@ pluto.addModule(require("./plugins/display.js")(pluto));
 //Play music with mplayer
 pluto.addModule(require("./plugins/player.js")(pluto));
 
+//Open a trello board
+pluto.addModule(require("./plugins/trellohandler.js")(pluto));
+
 //Get music downloads from Muzik
 pluto.addModule(require("./plugins/muzikdriver.js")(pluto));
 
