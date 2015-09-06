@@ -57,6 +57,22 @@ module.exports = function(config, tests) {
                     return new handlebars.SafeString(
                         '<a class="button' + classes + '" href="' + url + '">' + text + '</a>'
                     );
+                } else if (classes.indexOf("in_form") != -1) {
+                    id = makeId(15);
+                    if (classes) {
+                        classes = " " + classes;
+                    }
+                    return new handlebars.SafeString(
+                        '<a class="button' + classes + '" id="' + id + '">' + text + '</a>' +
+                        '<script type="text/javascript">' +
+                            'document.getElementById("' + id + '").addEventListener("click", function() { ' +
+                                'var form = document.createElement("form"); ' +
+                                'form.method = "' + verb + '"; ' +
+                                'form.action = "' + url + '"; ' +
+                                'form.submit(); ' +
+                            ' });' +
+                        '</script>'
+                    );
                 } else {
                     return new handlebars.SafeString(
                         '<form class="button_container" action="' + url + '" method="' + verb + '">' +

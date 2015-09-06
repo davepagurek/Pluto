@@ -4,14 +4,26 @@
 </div>
 {{/if}}
 
+{{#if listening}}
+<div class="message">
+    <span>We are waiting for {{listening.name}} to badge in to register a new id.</span>
+    {{button "POST" "/users/cancel" "Cancel" "small delete inline"}}
+</div>
+{{/if}}
+
 <h2>Existing Users</h2>
 {{#each users}}
 <form method='post' action='/users/change' enctype="multipart/form-data">
-    <input name='id' type='hidden' value='{{id}}' />
+    <input name='username' type='hidden' value='{{username}}' />
     <h3>{{name}}</h3>
     <div class='value'>
-        <label>ID</label>
-        <input name='newid' type='text' value='{{id}}' />
+        <label>Username</label>
+        <input name='newusername' type='text' value='{{username}}' />
+    </div>
+    <div class='value'>
+        <label>IDs</label>
+        <textarea name='ids'>{{ids}}</textarea>
+        {{button "POST" addLink "Register another" "in_form small inline"}}
     </div>
     <div class='value'>
         <label>Name</label>
@@ -35,12 +47,15 @@
         <input type="file" name="image" />
     </div>
     <input type='submit' value='Change' />
-    <a href="/score/{{encodedid}}">View AwesomePoints score</a>
 </form>
 {{/each}}
 
 <h2>Register new user</h2>
-<form method='post' action='/users/add'>
+<form method='post' action='/users/add' enctype="multipart/form-data">
+    <div class='value'>
+        <label>Username</label>
+        <input name='username' type='text' />
+    </div>
     <div class='value'>
         <label>Name</label>
         <input name='name' type='text' />
@@ -51,7 +66,12 @@
     </div>
     <div class='value'>
         <label>Artists</label>
-        <input name='artists' type='text' />
+        <textarea name='artists'></textarea>
+    </div>
+    <div class='value'>
+        <label>Profile Image</label>
+        <div class="icon"></div>
+        <input type="file" name="image" />
     </div>
 
 

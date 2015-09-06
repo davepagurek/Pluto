@@ -17,13 +17,21 @@ describe("users", function(){
         request(pluto.app)
             .post("/users/add")
             .field("name", "test user")
-            .expect(200)
+            .expect(302)
             .end(function(err, res) {
                 if (err) return done(err);
                 request(pluto.app)
                     .post("/users/add")
-                    .expect(409)
-                    .end(done);
+                    .expect(302)
+                    .end(function(err, res) {
+                        if (err) return done(err);
+                        try {
+                            assert.ok(usersModule.lastMessage, "There should be an error message");
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
+                    });
             });
     });
 
@@ -42,16 +50,20 @@ describe("users", function(){
         request(pluto.app)
             .post("/users/add")
             .field("name", "test user")
-            .expect(200)
+            .expect(302)
             .end(function(err, res) {
                 if (err) return done(err);
                 request(pluto.app)
                     .get("/users/io")
-                    .expect(200)
+                    .expect(302)
                     .end(function(err, res) {
                         if (err) return done(err);
-                        assert.equal(pluto.getStorage("users")["test"].in, true);
-                        done();
+                        try {
+                            assert.equal(pluto.getStorage("users")["test"].in, true);
+                            done();
+                        } catch (err) {
+                            done(err);
+                        }
                     });
             });
     });
@@ -76,11 +88,15 @@ describe("users", function(){
 
         request(pluto.app)
             .get("/users/io")
-            .expect(200)
+            .expect(302)
             .end(function(err, res) {
                 if (err) return done(err);
-                assert.equal(pluto.getStorage("users")["test"].in, false)
-                done()
+                try {
+                    assert.equal(pluto.getStorage("users")["test"].in, false);
+                    done();
+                } catch (err) {
+                    done(err);
+                }
             });
     });
 
@@ -104,11 +120,15 @@ describe("users", function(){
 
         request(pluto.app)
             .get("/users/io")
-            .expect(200)
+            .expect(302)
             .end(function(err, res) {
                 if (err) return done(err);
-                assert.equal(pluto.getStorage("users")["test"].in, true)
-                done()
+                try {
+                    assert.equal(pluto.getStorage("users")["test"].in, true);
+                    done();
+                } catch (err) {
+                    done(err);
+                }
             });
     });
 });

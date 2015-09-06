@@ -34,7 +34,7 @@ module.exports = function(pluto) {
     });
 
     pluto.addListener("users::register", function(user) {
-        githubModule.checkGithub(user.id);
+        githubModule.checkGithub(user.username);
     });
 
     return githubModule;
