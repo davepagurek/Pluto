@@ -15,7 +15,7 @@
     "handlebars": "2.0.0",
     "levenshtein": "1.0.5",
     "mocha": "2.2.5",
-    "morgan": "~1.5.1",
+    "morgan": "1.0.0",
     "multer": "0.1.8",
     "node-sass-middleware": "0.9.0",
     "path": "0.11.14",
