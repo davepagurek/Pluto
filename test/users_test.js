@@ -86,7 +86,7 @@ describe("users", function(){
                 if (err) return done(err);
                 request(pluto.app)
                     .post("/users/test/io")
-                    .expect(302)
+                    .expect(200)
                     .end(function(err, res) {
                         if (err) return done(err);
                         try {
@@ -121,7 +121,7 @@ describe("users", function(){
 
         request(pluto.app)
             .post("/users/test/io")
-            .expect(302)
+            .expect(200)
             .end(function(err, res) {
                 if (err) return done(err);
                 try {
@@ -154,7 +154,7 @@ describe("users", function(){
 
         request(pluto.app)
             .post("/users/test/io")
-            .expect(302)
+            .expect(200)
             .end(function(err, res) {
                 if (err) return done(err);
                 try {

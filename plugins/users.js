@@ -132,13 +132,14 @@ module.exports = function(pluto) {
     pluto.post("/users/:id/io", function(req, res) {
         var id = req.params.id;
         if (!id) {
-            usersModule.lastMessage = "No id specified.";
-            return res.redirect("/users");
+            return res.status(406).json({status: "error", message: "No id specified"});
         }
+        var isIn = false;
 
         if (usersModule.listening) {
             usersModule.listening.ids.push(id);
             usersModule.listening.in = true;
+            isIn = true;
 
             pluto.emitEvent("users::register", usersModule.listening);
             usersModule.lastMessage = usersModule.listening.name + " registered!";
@@ -157,11 +158,11 @@ module.exports = function(pluto) {
             }
 
             if (!currentUser) {
-                usersModule.lastMessage = "No user found for that id.";
-                return res.redirect("/users");
+                return res.status(401).json({status: "error", message: "No user found for that id"});
             }
 
             currentUser.in = !currentUser.in;
+            isIn = currentUser.in;
 
             pluto.emitEvent("users::sign" + (currentUser.in?"in":"out"), currentUser);
 
@@ -169,7 +170,8 @@ module.exports = function(pluto) {
 
             usersModule.lastMessage = currentUser.name + " signed " + (currentUser.in?"in":"out") + "!";
         }
-        res.redirect("/users");
+        res.status(200);
+        res.json({status: "OK", in: isIn});
     });
 
     pluto.post("/users/cancel", function(req, res) {
