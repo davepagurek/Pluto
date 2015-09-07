@@ -3,6 +3,7 @@ module.exports = function(config, tests) {
     config = config || {};
 
     var path = require('path');
+    //var favicon = require('serve-favicon');
     var logger = require('morgan');
     var bodyParser = require('body-parser');
     var fs = require('fs');
@@ -259,6 +260,7 @@ module.exports = function(config, tests) {
     //This function should be called AFTER adding sources so that other listeners
     //take precedence over the error listeners
     pluto.listen = function(port) {
+        //pluto.router.use(favicon(__dirname + '/public/favicon.ico'));
         pluto.app.use(logger('dev'));
         pluto.app.use(bodyParser.json());
         pluto.app.use(bodyParser.urlencoded({ extended: false }));
