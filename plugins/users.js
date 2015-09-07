@@ -2,10 +2,12 @@ module.exports = function(pluto) {
     var path = require("path");
     var fs = require('fs');
 
-    var usersModule = {};
+    var usersModule = {
+        lastMessage: null,
+        listening: null
+    };
 
     var data = pluto.getStorage("users");
-    var listening = 0;
 
     var title = "Manage Users";
 
@@ -17,140 +19,162 @@ module.exports = function(pluto) {
     pluto.get("/users", function(req, res) {
         var users = [];
         for (var user in data) {
+            data[user].addLink = "/users/" + data[user].username + "/add";
             users.push(data[user]);
-            users[users.length-1].encodedid = encodeURIComponent(users[users.length-1].id);
         }
         res.render("users-manage.html", {
-            "users": users,
-            "title": title
+            users: users,
+            title: title,
+            listening: usersModule.listening,
+            message: usersModule.lastMessage
         });
+        usersModule.lastMessage = null;
     });
 
     pluto.post("/users/add", function(req, res) {
-        var users = [];
-        for (var user in data) {
-            users.push(data[user]);
-            users[users.length-1].encodedid = encodeURIComponent(users[users.length-1].id);
+        var username = req.body.username;
+        if (!username) {
+            usersModule.lastMessage = "You need to specify a username!";
+            return res.redirect("/users");
         }
         var name = req.body.name;
-        var github = req.body.github;
-        var artists = req.body.artists || "";
-
-
-        if (!listening) {
-            listening = {
-                "id": 0,
-                "name": name,
-                "github": github,
-                "artists": artists.split(",")
-            };
-            res.render("users-manage.html", {
-                "users": users,
-                "title": title,
-                "message": "User " + name + " added. Make the user go to <strong>/users/io</strong> to register an id."
-            });
-        } else {
-            res.status(409);
-            res.render("users-manage.html", {
-                "users": users,
-                "title": title,
-                "message": "Can't add a new user yet, we're waiting for " + listening.name + " to register their id!"
-            });
+        if (!name) {
+            usersModule.lastMessage = "You need to specify a name!";
+            return res.redirect("/users");
         }
-    });
-
-    pluto.post("/users/change", function(req, res) {
-        var users = [];
-        for (var user in data) {
-            users.push(data[user]);
-            users[users.length-1].encodedid = encodeURIComponent(users[users.length-1].id);
-        }
-        var id = req.body.id;
-        var newid = req.body.newid;
-        var name = req.body.name;
-        var del = req.body.delete;
         var github = req.body.github;
         var artists = req.body.artists;
         var image = 0;
         if (req.files) image = req.files.image;
 
-        if (data[id]) {
+        if (!usersModule.listening) {
+            usersModule.listening = {
+                username: username,
+                name: name,
+                github: github,
+                ids: [],
+                in: false,
+                artists: artists ? artists.split(/, ?/) : []
+            };
+            if (image) {
+                usersModule.listening.image = image.name;
+            }
+            data[usersModule.listening.username] = usersModule.listening;
+            pluto.saveStorage("users");
+            usersModule.lastMessage = "User " + name + " added.";
+        } else {
+            usersModule.lastMessage = "Can't add a new user yet, we're waiting for " + usersModule.listening.name + " to register their id!";
+        }
+        res.redirect("/users");
+    });
+
+    pluto.post("/users/:username/add", function(req, res) {
+        var user = data[req.params.username];
+        if (!user) {
+            usersModule.lastMessage = "User " + req.params.username + " does not exist.";
+        } else {
+            usersModule.listening = user;
+        }
+        res.redirect("/users");
+    });
+
+    pluto.post("/users/change", function(req, res) {
+        var username = req.body.username;
+        var newusername = req.body.newusername;
+        var name = req.body.name;
+        var del = req.body.delete;
+        var github = req.body.github;
+        var artists = req.body.artists;
+        var ids = req.body.ids;
+        var image = 0;
+        if (req.files) image = req.files.image;
+
+        if (data[username]) {
             if (del) {
-                if (data[id].image && data[id].image.length>0 && fs.existsSync("./public/uploads/" + data[id].image)) fs.unlinkSync("./public/uploads/" + data[id].image);
-                delete data[id];
-                res.send("User deleted.");
+                var deletedName = data[username].name;
+                if (data[username].image && data[username].image.length>0 && fs.existsSync("./public/uploads/" + data[username].image))
+                    fs.unlinkSync("./public/uploads/" + data[username].image);
+                delete data[username];
+                usersModule.lastMessage = "Deleted " + deletedName + "'s user.";
             } else {
-                if (name) data[id].name = name;
-                if (github) data[id].github = github;
-                if (artists) data[id].artists = artists.split(",");
+                data[username].name = name;
+                data[username].github = github;
+                data[username].artists = artists ? artists.split(",") : [];
+                if (!ids || ids == "") {
+                    data[username].ids = [];
+                } else {
+                    data[username].ids = ids.split(/, ?/);
+                }
                 if (image) {
-                    if (data[id].image && data[id].image.length>0 && fs.existsSync("./public/uploads/" + data[id].image)) fs.unlinkSync("./public/uploads/" + data[id].image);
-                    data[id].image = req.files.image.name;
+                    if (data[username].image && data[username].image.length>0 && fs.existsSync("./public/uploads/" + data[username].image))
+                        fs.unlinkSync("./public/uploads/" + data[username].image);
+                    data[username].image = image.name;
                 }
-                if (newid && newid != id) {
-                    data[id].id = newid;
-                    data[newid] = data[id];
-                    delete data[id];
+                if (newusername && newusername != id) {
+                    if (data[newusername]) {
+                        usersModule.lastMessage = "A user already exists with the username " + newusername + ".";
+                        return res.redirect("/users");
+                    } else {
+                        data[username].username = newusername;
+                        data[newusername] = data[username];
+                        delete data[username];
+                    }
                 }
-                res.render("users-manage.html", {
-                    "users": users,
-                    "title": title,
-                    "message": "User changed."
-                });
+                usersModule.lastMessage = "User changed.";
             }
             pluto.saveStorage("users");
         } else {
-            res.render("users-manage.html", {
-                "users": users,
-                "title": title,
-                "message": "User does not exist."
-            });
+            usersModule.lastMessage = "User does not exist.";
         }
+        res.redirect("/users");
     });
 
-    pluto.get("/users/io", function(req, res) {
-        var users = [];
-        for (var user in data) {
-            users.push(data[user]);
-            users[users.length-1].encodedid = encodeURIComponent(users[users.length-1].id);
+    pluto.post("/users/:id/io", function(req, res) {
+        var id = req.params.id;
+        if (!id) {
+            usersModule.lastMessage = "No id specified.";
+            return res.redirect("/users");
         }
-        var id = pluto.getId(req, res);
 
-        if (listening) {
-            listening.id = id;
-            listening.in = true;
-            data[id] = listening;
-            listening = 0;
+        if (usersModule.listening) {
+            usersModule.listening.ids.push(id);
+            usersModule.listening.in = true;
 
-            pluto.emitEvent("users::register", data[id]);
+            pluto.emitEvent("users::register", usersModule.listening);
+            usersModule.lastMessage = usersModule.listening.name + " registered!";
 
-            pluto.saveStorage("users");
-
-            res.render("users-manage.html", {
-                "users": users,
-                "title": title,
-                "message": data[id].name + " registered!"
-            });
-
-        } else if (data[id]) {
-            data[id].in = (data[id].in?false:true);
-
-            pluto.emitEvent("users::sign" + (data[id].in?"in":"out"), data[id]);
+            usersModule.listening = null;
 
             pluto.saveStorage("users");
 
-            res.render("users-manage.html", {
-                "users": users,
-                "title": title,
-                "message": data[id].name + " signed " + (data[id].in?"in":"out") + "!"
-            });
         } else {
-            res.render("users-manage.html", {
-                "users": users,
-                "title": title,
-                "message": "User does not exist: " + id
-            });
+            var currentUser = null;
+            for (var user in data) {
+                if (data[user].ids.indexOf(id) != -1) {
+                    currentUser = data[user];
+                    break;
+                }
+            }
+
+            if (!currentUser) {
+                usersModule.lastMessage = "No user found for that id.";
+                return res.redirect("/users");
+            }
+
+            currentUser.in = !currentUser.in;
+
+            pluto.emitEvent("users::sign" + (currentUser.in?"in":"out"), currentUser);
+
+            pluto.saveStorage("users");
+
+            usersModule.lastMessage = currentUser.name + " signed " + (currentUser.in?"in":"out") + "!";
         }
+        res.redirect("/users");
+    });
+
+    pluto.post("/users/cancel", function(req, res) {
+        usersModule.listening = null;
+        res.redirect("/users");
     });
 
     return usersModule;

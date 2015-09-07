@@ -20,6 +20,7 @@ $color_primary_highlight: #6AEBD4;
 $color_disabled: #DDF;
 $color_newsitem_highlighted:#BDBDBD;
 $color_link_color: #000;
+$color_message: #ED9;
 
 /* Responsive breakpoints */
 
@@ -34,6 +35,10 @@ body {
     padding:0;
     font-family: 'Roboto', sans-serif;
     background-color: $color_background;
+}
+
+span {
+    vertical-align:middle;
 }
 
 .header {
@@ -147,11 +152,12 @@ form {
     }
 }
 
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], textarea {
     background-color:$color_input;
     border:1px solid $color_input;
     border-radius:4px;
     padding:8px;
+    vertical-align:middle;
     transition: background-color ease 0.3s;
 
     &:hover, &:focus {
@@ -173,6 +179,7 @@ button,
 a.button {
     background-color:$color_main;
     display:inline-block;
+    vertical-align:middle;
     color:$color_main_text;
     padding:15px;
     margin:20px 0 0 0;
@@ -213,6 +220,10 @@ a.button {
             background-color: $color_delete_highlight;
         }
     }
+
+    &.inline {
+        margin: 5px;
+    }
 }
 
 
@@ -221,7 +232,16 @@ form.button_container {
     padding:0;
     margin:0;
     box-shadow:none;
+    vertical-align:middle;
     border-radius:0;
+}
+
+/* Messages */
+.message {
+    background-color: $color_message;
+    padding:10px;
+    border-radius:4px;
+    margin-bottom:20px;
 }
 
 
