@@ -22,7 +22,6 @@
     "popsicle": "0.3.10",
     "request": "2.61.0",
     "request-progress": "0.3.1",
-    "serve-favicon": "~2.2.0",
     "shelljs": "0.3.0",
     "should": "5.0.0",
     "supertest": "1.0.1",
