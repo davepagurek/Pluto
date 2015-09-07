@@ -5,7 +5,6 @@ module.exports = function(config, tests) {
     var path = require('path');
     //var favicon = require('serve-favicon');
     var logger = require('morgan');
-    var cookieParser = require('cookie-parser');
     var bodyParser = require('body-parser');
     var fs = require('fs');
     var express = require("express");
@@ -146,22 +145,6 @@ module.exports = function(config, tests) {
     };
 
 
-    pluto.getId = function(req, res) {
-        if (config.id == "TEST") {
-            return config.getId(req, res);
-        } else if (config.id == "IP") {
-            return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        } else { //Default: COOKIE
-            if (req.cookies.plutoId) {
-                return req.cookies.plutoId;
-            } else {
-                var id = makeId(20);
-                res.cookie('plutoId', id, { maxAge: 9000000000, httpOnly: true });
-                return id;
-            }
-        }
-    };
-
     pluto.request = function(url, callback) {
         if (config.testRequests && config.testRequests[url]) {
             if (typeof config.testRequests[url] == "string") {
@@ -281,7 +264,6 @@ module.exports = function(config, tests) {
         pluto.app.use(logger('dev'));
         pluto.app.use(bodyParser.json());
         pluto.app.use(bodyParser.urlencoded({ extended: false }));
-        pluto.app.use(cookieParser());
         pluto.app.use(
             sassMiddleware({
                 src: path.join(__dirname, '../sass'),
