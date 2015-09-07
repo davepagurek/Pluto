@@ -129,7 +129,7 @@ module.exports = function(pluto) {
         res.redirect("/users");
     });
 
-    pluto.get("/users/:id/io", function(req, res) {
+    pluto.post("/users/:id/io", function(req, res) {
         var id = req.params.id;
         if (!id) {
             usersModule.lastMessage = "No id specified.";
