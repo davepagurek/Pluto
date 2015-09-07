@@ -110,7 +110,7 @@ module.exports = function(pluto) {
                         fs.unlinkSync("./public/uploads/" + data[username].image);
                     data[username].image = image.name;
                 }
-                if (newusername && newusername != id) {
+                if (newusername && newusername != username) {
                     if (data[newusername]) {
                         usersModule.lastMessage = "A user already exists with the username " + newusername + ".";
                         return res.redirect("/users");
