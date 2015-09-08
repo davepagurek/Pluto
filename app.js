@@ -1,5 +1,5 @@
 var pluto = require("./Pluto/pluto.js")({
-	"tts": "festival"
+	"tts": "espeak"
 });
 
 //Keeps track of if users are IN or OUT by.

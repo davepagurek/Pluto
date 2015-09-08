@@ -154,14 +154,19 @@ module.exports = function(config, tests) {
     };
 
     //Text-to-speech
-    pluto.say = function(text) {
+    pluto.say = function(text, callback) {
+        callback = callback || function(){};
+        var command = null;
         if (config.tts == "festival") {
-            exec("echo \"" + text.replace("\"", "\\\"") + "\" | festival --tts");
+            command = "echo \"" + text.replace("\"", "\\\"") + "\" | festival --tts";
+        } else if (config.tts == "espeak") {
+            command = "espeak -ven+f3 -k5 -s150 -ven-us \"" + text.replace("\"", "\\\"") + "\"";
         } else if (config.tts == "say") {
-           exec("say \"" + text.replace("\"", "\\\"") + "\"");
+            command = "say \"" + text.replace("\"", "\\\"") + "\"";
         } else if (config.tts == "google") {
-           exec("bin/say.sh \"" + text.replace("\"", "\\\"") + "\"");
+            command = "bin/say.sh \"" + text.replace("\"", "\\\"") + "\"";
         }
+        if (command) exec(command, {async: true}, callback);
         console.log("Pluto says: " + text);
     };
 

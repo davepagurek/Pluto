@@ -2,7 +2,7 @@ module.exports = function(pluto) {
     require("shelljs/global");
 
     var welcomeModule = {
-        "waitDelay": 3.5
+        "waitDelay": 0
     };
 
     welcomeModule.lines = [];
@@ -23,7 +23,7 @@ module.exports = function(pluto) {
 
     pluto.addListener("users::signin", function(user) {
         if (user.name == "Andrew") {
-            addLine("Hello, " + user.name + ". Once you start Russian, there's no time for Stalin.");
+            addLine("Hello, " + user.name + ". Once you start Russian, there's no time for Stahlin.");
         }else if (user.name=="Dave"){
             addLine("I'm sorry Dave, I'm afraid I can't let you do that!");
         }else if (user.name=="Ruo Tai"){
