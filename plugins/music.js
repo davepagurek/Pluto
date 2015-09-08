@@ -193,8 +193,9 @@ module.exports = function(pluto) {
     });
 
     pluto.post("/music/play", function(req, res) {
-        if (musicModule.downloading) return; // Do nothing when waiting for download
-        if (musicModule.paused) {
+        if (musicModule.downloading) {
+            // Do nothing when waiting for download
+        } else if (musicModule.paused) {
             musicModule.paused = false;
             pluto.emitEvent("music::resume");
         } else if (musicModule.queue.length > 0) {
@@ -210,10 +211,33 @@ module.exports = function(pluto) {
     });
 
     pluto.post("/music/pause", function(req, res) {
-        if (musicModule.downloading) return; // Do nothing when waiting for download
-        if (musicModule.lastPlaying) {
+        if (musicModule.downloading) {
+            // Do nothing when waiting for download
+        } else if (musicModule.lastPlaying) {
             musicModule.paused = true;
             pluto.emitEvent("music::pause");
+        }
+        res.redirect("/music");
+    });
+
+    pluto.post("/music/retry", function(req, res) {
+        if (musicModule.lastPlaying) {
+            musicModule.paused = false;
+            musicModule.downloading = true;
+            musicModule.progress = null;
+            pluto.emitEvent("music::stop");
+            pluto.emitEvent("music::retry", musicModule.lastPlaying);
+        }
+        res.redirect("/music");
+    });
+
+    pluto.post("/music/reset", function(req, res) {
+        if (musicModule.lastPlaying) {
+            musicModule.paused = false;
+            musicModule.downloading = true;
+            musicModule.progress = null;
+            pluto.emitEvent("music::stop");
+            pluto.emitEvent("music::reset", musicModule.lastPlaying);
         }
         res.redirect("/music");
     });
@@ -257,10 +281,12 @@ module.exports = function(pluto) {
 
     pluto.addListener("music::next", function() {
         musicModule.paused = false;
+        musicModule.downloading = false;
         musicModule.progress = null;
         musicModule.lastPlaying = musicModule.queue.shift();
+        pluto.emitEvent("music::stop");
         if (musicModule.lastPlaying) {
-            pluto.emitEvent("music::stop");
+            musicModule.downloading = true;
             pluto.emitEvent("music::play", musicModule.lastPlaying, musicModule.queue[0]);
         }
     });

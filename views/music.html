@@ -21,6 +21,8 @@
       {{#if choice}}
       <h6>{{choice}}'s choice</h6>
       {{/if}}
+      {{ajax_button "POST" "/music/retry" "Try another link" "small"}}
+      {{ajax_button "POST" "/music/reset" "Reset links" "small"}}
     </div>
   </div>
 </div>

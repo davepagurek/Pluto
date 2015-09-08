@@ -15,53 +15,108 @@ module.exports = function(pluto) {
     var downloadError = null;
     var mplayer = null;
     var sentStop = false;
+    var badSong = false;
+    var songProgress = null;
 
-    var playSong = function(songURL, song, url) {
-        mplayer = spawn( 'mplayer', [ '-slave', songURL ] );
+    player.handleBadSong = function(song, url) {
+        console.log("Can't play file");
+        rm(songs[song.id].url);
+        delete songs[song.id].url;
+        if (url) songs[song.id].ignore.push(url);
+        badSong = true;
+        pluto.emitEvent("music::play", song);
+    };
+
+    player.playSong = function(song, url) {
+        mplayer = spawn( 'mplayer', [ '-slave', songs[song.id].url ] );
         mplayer.on('exit', function (response) {
-            songProgress = null;
             mplayer = null;
             if (response == 0) {
                 console.log("Finished playing");
                 if (sentStop) {
                     sentStop = false;
+                    songProgress = null;
+                } else if (badSong) {
+                    badSong = false;
+                    songProgress = null;
+                } else if (!songProgress) {
+                    player.handleBadSong(song, url);
                 } else {
+                    songProgress = null;
                     pluto.emitEvent("music::next");
                 }
             } else {
-                console.log("Can't play file, got response: " + response);
-                rm(songURL);
-                if (url) songs[song.id].ignore.push(url);
-                pluto.emitEvent("music::play", song);
+                songProgress = null;
+                player.handleBadSong(song, url);
             }
         });
 
         //Output format:
         //13.7 (13.7) of 284.0 (04:44.0)
         mplayer.stdout.on('data', function (data) {
-            var match = /([\d\.:]+) \([\d\.:]+\) of ([\d\.]+) \([\d\.:]+\)/.exec(data);
-            if (match) {
-                pluto.emitEvent("player::progress", {
-                    current: parseInt(match[1]),
-                    total: parseInt(match[2])
-                });
+            if (sentStop) return;
+            data = "" + data;
+            var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([\d\.]+) \([\d\.:]+\)/.exec(data);
+            if (progressMatch) {
+                songProgress = {
+                    current: parseInt(progressMatch[1]),
+                    total: parseInt(progressMatch[2])
+                };
+                pluto.emitEvent("player::progress", songProgress);
+                return;
+            }
+
+            var decodeErrorMatch = /(?:decoding for stream .+ failed)|(?:no sound)/i.exec(data);
+            if (decodeErrorMatch) {
+                player.handleBadSong(song, url);
+                return;
             }
         });
     };
+
+    pluto.addListener("music::retry", function(song) {
+        if (songs[song.id].url) {
+            rm(songs[song.id].url);
+            delete songs[song.id].url;
+        }
+        if (songs[song.id].from) {
+            songs[song.id].ignore.push(songs[song.id].from);
+            delete songs[song.id].from;
+        }
+        delete songs[song.id].from;
+        pluto.emitEvent("music::play", song);
+    });
+
+    pluto.addListener("music::reset", function(song) {
+        if (songs[song.id].url) {
+            rm(songs[song.id].url);
+            delete songs[song.id].url;
+        }
+        if (songs[song.id].ignore) {
+            songs[song.id].ignore = [];
+        }
+        delete songs[song.id].from;
+        pluto.emitEvent("music::play", song);
+    });
 
     pluto.addListener("music::play", function(song) {
         downloadError = null;
         downloadPercent = null;
         downloading = song;
         attempts++;
-        var songURL = "storage/songs/" + song.id + ".mp3";
-        if (test("-f", songURL)) {
-            console.log("Song file exists");
-            downloading = null;
-            playSong(songURL, song);
+        songs[song.id] = songs[song.id] || {ignore: []};
+        songs[song.id].lastPlayed = Date.now();
+        if (songs[song.id].url) {
+            if (test("-f", songs[song.id].url)) {
+                console.log("Song file exists");
+                downloading = null;
+                player.playSong(song, null);
+            } else {
+                delete songs[song.id].url;
+                pluto.emitEvent("music::play", song);
+            }
         } else {
             console.log("getting song urls");
-            songs[song.id] = songs[song.id] || {ignore: []};
             pluto.emitEvent("muzik::get_link", song, songs[song.id].ignore, function(err,url) {
                 if (err) {
                     downloadError = err;
@@ -69,6 +124,7 @@ module.exports = function(pluto) {
                     attempts = 0;
                     return;
                 }
+                console.log("Requesting headers");
                 request.head(url, function(err, res, body) {
                     if (err ||
                         !res.headers['content-type'] || !res.headers['content-length'] ||
@@ -80,21 +136,35 @@ module.exports = function(pluto) {
                         pluto.emitEvent("music::play", song);
                     } else {
                         console.log("Starting download");
-                        progress(request(url), {
+                        var songURL = "storage/songs/" + song.id + ".mp3";
+                        console.log(url);
+                        var downloader = progress(request(url), {
                             throttle: 200
-                        })
-                        .on("error", function(err) {
+                        });
+                        var cancelDownload = function() {
+                            downloader.abort();
+                            rm(songURL);
+                        };
+                        pluto.addListener("music::stop", cancelDownload);
+                        pluto.emitEvent("player::download_started", downloader);
+                        downloader.on("error", function(err) {
                             songs[song.id].ignore.push(url);
                             pluto.saveStorage("songs");
                             pluto.emitEvent("music::play", song);
+                            pluto.removeListener("music::stop", cancelDownload);
                         })
                         .on("progress", function(state) {
                             downloadPercent = state.percent;
                         })
                         .pipe(fs.createWriteStream(songURL)).on('close', function() {
+                            if (!test("-f", songURL)) return;
                             console.log("Downloaded file");
+                            pluto.removeListener("music::stop", cancelDownload);
                             downloading = null;
-                            playSong(songURL, song, url);
+                            songs[song.id].url = songURL;
+                            songs[song.id].from = url;
+                            pluto.saveStorage("songs");
+                            player.playSong(song, url);
                         });
                     }
                 });
@@ -119,6 +189,7 @@ module.exports = function(pluto) {
         console.log("Stopping");
         sentStop = true;
         mplayer.stdin.write("stop\n");
+        mplayer.stdin.write("quit\n");
     });
 
 

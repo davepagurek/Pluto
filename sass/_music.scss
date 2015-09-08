@@ -25,8 +25,8 @@
     img {
         display:block;
         margin: 0 40px 0 0;
-        width:100%;
         width: 75px;
+        height:75px;
 
         @media all and (max-width: $full_width) {
             margin-right: 20px;
