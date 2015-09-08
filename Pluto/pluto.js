@@ -20,11 +20,6 @@ module.exports = function(config, tests) {
 
     pluto.app = express();
 
-    var festival = false;
-    if (which("festival")) {
-        festival = true;
-    }
-
     pluto.modules = [];
     pluto.schedules = [];
     pluto.storage = {};
@@ -160,8 +155,12 @@ module.exports = function(config, tests) {
 
     //Text-to-speech
     pluto.say = function(text) {
-        if (festival) {
-            exec("echo " + text.replace("\"", "\\\"") + " | festival --tts");
+        if (config.tts == "festival") {
+            exec("echo \"" + text.replace("\"", "\\\"") + "\" | festival --tts");
+        } else if (config.tts == "say") {
+           exec("say \"" + text.replace("\"", "\\\"") + "\"");
+        } else if (config.tts == "google") {
+           exec("bin/say.sh \"" + text.replace("\"", "\\\"") + "\"");
         }
         console.log("Pluto says: " + text);
     };
