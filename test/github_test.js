@@ -23,7 +23,7 @@ describe("github", function(){
         }
         pluto.addListener("points::awardTo", callback)
         var githubModule = require("../plugins/github.js")(pluto);
-        pluto.addModule(githubModule);
+        pluto.addModule("github", githubModule);
         pluto.listen();
         assert.equal(callbackRan, true);
     });

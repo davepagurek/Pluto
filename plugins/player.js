@@ -28,6 +28,7 @@ module.exports = function(pluto) {
     };
 
     player.playSong = function(song, url) {
+        console.log("got song ", song);
         mplayer = spawn( 'mplayer', [ '-slave', songs[song.id].url ] );
         mplayer.on('exit', function (response) {
             mplayer = null;

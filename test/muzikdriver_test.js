@@ -18,7 +18,7 @@ describe("muzikdriver", function(){
             }
         });
         var muzik = require("../plugins/muzikdriver.js")(pluto);
-        pluto.addModule(muzik);
+        pluto.addModule("muzik", muzik);
         pluto.listen();
         var song = {
             name: "We Used To Wait",
@@ -51,7 +51,7 @@ describe("muzikdriver", function(){
             }
         });
         var muzik = require("../plugins/muzikdriver.js")(pluto);
-        pluto.addModule(muzik);
+        pluto.addModule("muzik", muzik);
         pluto.listen();
         var song = {
             name: "We Used To Wait",
@@ -84,7 +84,7 @@ describe("muzikdriver", function(){
             }
         });
         var muzik = require("../plugins/muzikdriver.js")(pluto);
-        pluto.addModule(muzik);
+        pluto.addModule("muzik", muzik);
         pluto.listen();
         var song = {
             name: "We Used To Wait",
@@ -117,7 +117,7 @@ describe("muzikdriver", function(){
             }
         });
         var muzik = require("../plugins/muzikdriver.js")(pluto);
-        pluto.addModule(muzik);
+        pluto.addModule("muzik", muzik);
         pluto.listen();
         var song = {
             name: "We Used To Wait",
@@ -143,7 +143,7 @@ describe("muzikdriver", function(){
             }
         });
         var muzik = require("../plugins/muzikdriver.js")(pluto);
-        pluto.addModule(muzik);
+        pluto.addModule("muzik", muzik);
         pluto.listen();
         var song = {
             name: "We Used To Wait",
@@ -169,7 +169,7 @@ describe("muzikdriver", function(){
             }
         });
         var muzik = require("../plugins/muzikdriver.js")(pluto);
-        pluto.addModule(muzik);
+        pluto.addModule("muzik", muzik);
         pluto.listen();
         var song = {
             name: "We Used To Wait",

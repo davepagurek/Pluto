@@ -237,24 +237,24 @@ module.exports = function(config, tests) {
     };
 
 
-    pluto.addModule = function(module) {
-        pluto.modules.push(module);
+    pluto.addModule = function(name, module) {
+        pluto.modules[name] = module;
         if (module.listeners) {
             for (var event in module.listeners) {
-                addListener(event, module.listeners[event]);
+                pluto.addListener(event, module.listeners[event]);
             }
         }
     };
 
-    pluto.removeModule = function(module) {
-        if (module.pluto.listeners) {
+    pluto.removeModule = function(name) {
+        var module = pluto.modules[name];
+        if (!module) return;
+        if (module.listeners) {
             for (var event in module.pluto.listeners) {
-                removeListener(event, module.pluto.listeners[event]);
+                pluto.removeListener(event, module.pluto.listeners[event]);
             }
         }
-        pluto.modules = pluto.modules.map(function(element) {
-            return (element != module);
-        });
+        delete pluto.modules[name];
     };
 
 
@@ -297,7 +297,10 @@ module.exports = function(config, tests) {
 
         pluto.router.use(function(err, req, res, next) {
             res.status(err.status || 500);
-            res.send("error: " + err.message);
+            res.send(
+                "<h2>error: " + err.message + "</h2>" +
+                "<pre>" + err.stack + "</pre>"
+            );
         });
 
         pluto.app.use("/", pluto.router);

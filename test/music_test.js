@@ -11,8 +11,9 @@ describe("music", function(){
                 }
             },
         });
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -38,8 +39,9 @@ describe("music", function(){
                 }
             },
         });
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -66,8 +68,9 @@ describe("music", function(){
                 }
             },
         });
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -94,8 +97,9 @@ describe("music", function(){
                 },
             },
         });
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -119,9 +123,10 @@ describe("music", function(){
                 }
             },
         });
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -146,9 +151,10 @@ describe("music", function(){
                 }
             },
         });
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -166,9 +172,10 @@ describe("music", function(){
     });
     it("should be able to move tracks up", function(done) {
         var pluto = require("../Pluto/pluto.js")();
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test1"}, {name: "test2"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -184,9 +191,10 @@ describe("music", function(){
     });
     it("should not move the first track up", function(done) {
         var pluto = require("../Pluto/pluto.js")();
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test1"}, {name: "test2"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -202,9 +210,10 @@ describe("music", function(){
     });
     it("should be able to move tracks down", function(done) {
         var pluto = require("../Pluto/pluto.js")();
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test1"}, {name: "test2"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -220,9 +229,10 @@ describe("music", function(){
     });
     it("should not move the last track down", function(done) {
         var pluto = require("../Pluto/pluto.js")();
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test1"}, {name: "test2"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -238,9 +248,10 @@ describe("music", function(){
     });
     it("should not error on moving invalid indices", function(done) {
         var pluto = require("../Pluto/pluto.js")();
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test1"}, {name: "test2"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -256,9 +267,10 @@ describe("music", function(){
     });
     it("should be able to delete tracks", function(done) {
         var pluto = require("../Pluto/pluto.js")();
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test1"}, {name: "test2"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
@@ -273,9 +285,10 @@ describe("music", function(){
     });
     it("should not error when deleting invalid indices", function(done) {
         var pluto = require("../Pluto/pluto.js")();
+        pluto.addModule("spotify", require("../plugins/spotify.js")(pluto));
         var musicModule = require("../plugins/music.js")(pluto);
         musicModule.queue = [{name: "test1"}, {name: "test2"}];
-        pluto.addModule(musicModule);
+        pluto.addModule("music", musicModule);
         pluto.listen();
 
         request(pluto.app)
