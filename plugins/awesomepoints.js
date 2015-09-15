@@ -19,16 +19,13 @@ module.exports = function(pluto) {
     });
 
     pluto.addListener("points::awardTo", function(user,increment) {
-        if (data[user.id]) {
-            if(data[user.id].points)
-                data[user.id].points += increment;
+        if (data[user.name]) {
+            if(data[user.name].points)
+                data[user.name].points += increment;
             else
-                data[user.id].points = increment;
+                data[user.name].points = increment;
 
-            pluto.saveStorage("users", function() {
-                //saved!
-                pluto.emitEvent("users::updated");
-            });
+            pluto.saveStorage("users");
         } else {
             console.log("Error awarding points")
         }

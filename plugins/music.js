@@ -1,8 +1,14 @@
 module.exports = function(pluto) {
+    var async = require("async");
 
-    var data = pluto.getStorage("users")||{};
+    var data = pluto.getStorage("users");
     var title = "Music Player";
     var scripts = ["/javascripts/music_frontend.js"];
+
+    var sources = [];
+    //Sources are expected to implement the following functions:
+    //source.getSong(targetSong, targetAlbum, targetArtist, callback(err, result))
+    //source.getAlbum(targetAlbum, targetArtist, callback(err, result))
 
     var musicModule = {
         lastPlaying: null,
@@ -10,8 +16,33 @@ module.exports = function(pluto) {
         queue: [],
         paused: false,
         lastMessage: null,
-        downloading: false
+        downloading: false,
+        sources: [],
+        trySources: function(test, after) {
+            var queue = musicModule.sources.slice(); //get copy of array
+            var err = null;
+            var result = null;
+            async.whilst(
+                function() {
+                    // Run until we get a result or run out of sources
+                    return !result && queue.length > 0;
+                },
+                function(callback) {
+                    test(queue.shift(), function(e, r) {
+                        err = e;
+                        result = r;
+                        console.log(e, r);
+                        callback();
+                    });
+                },
+                function() {
+                    after(err, result);
+                }
+            );
+        }
     };
+
+    if (pluto.modules.spotify) musicModule.sources.push(pluto.modules.spotify);
 
     pluto.addListener("player::progress", function(data) {
         musicModule.progress = data;
@@ -31,82 +62,50 @@ module.exports = function(pluto) {
 
     pluto.post("/music/add", function(req, response) {
         if (req.body.song) {
-            var searchTerm = (req.body.artist ? (encodeURIComponent(req.body.artist) + " ") : "") +
-                (req.body.album ? (encodeURIComponent(req.body.album) + " ") : "") +
-                encodeURIComponent(req.body.song);
-            pluto.request("https://api.spotify.com/v1/search?q=" + searchTerm + "&type=track", function(res) {
-                if (res.status != 200) {
-                    musicModule.lastMessage = "An error occurred: response " + res.status;
-                    response.redirect("/music");
-                    return;
-                }
-                if (!res.body.tracks || !res.body.tracks.items || res.body.tracks.items.length == 0) {
-                    musicModule.lastMessage = "Sorry, no results were found.";
-                    response.redirect("/music");
-                    return;
-                }
-                var song = res.body.tracks.items[0];
-                var element = {
-                    name: song.name,
-                    album: song.album.name,
-                    artist: song.artists[0].name,
-                    id: song.id,
-                    art: song.album.images && song.album.images[1] ? song.album.images[1].url : ""
-                };
-                if (req.body.position == "next") {
-                    musicModule.queue.unshift(element);
-                } else {
-                    musicModule.queue.push(element);
-                }
-                response.redirect("/music");
-            });
-        } else if (req.body.album) {
-            var searchTerm = (req.body.artist ? (encodeURIComponent(req.body.artist) + " ") : "") +
-                encodeURIComponent(req.body.album);
-            pluto.request("https://api.spotify.com/v1/search?q=" + searchTerm + "&type=album", function(res) {
-                if (res.status != 200) {
-                    musicModule.lastMessage = "An error occurred: response " + res.status;
-                    response.redirect("/music");
-                    return;
-                }
-                if (!res.body.albums || !res.body.albums.items || res.body.albums.items.length == 0) {
-                    musicModule.lastMessage = "Sorry, no results were found.";
-                    response.redirect("/music");
-                    return;
-                }
-                var album = res.body.albums.items[0];
-                var albumArt = album.images && album.images[1] ? album.images[1].url : "";
-                pluto.request("https://api.spotify.com/v1/albums/" + album.id + "/tracks", function(res) {
-                    if (res.status != 200) {
-                        musicModule.lastMessage = "An error occurred: response " + res.status;
-                        response.redirect("/music");
-                        return;
-                    }
-                    if (!res.body.items || res.body.items.length == 0) {
-                        musicModule.lastMessage = "Sorry, no results were found.";
-                        response.redirect("/music");
-                        return;
-                    }
-
-                    var songs = res.body.items;
-                    artist = songs[0].artists[0].name;
-                    newTracks = songs.map(function(song) {
-                        return {
-                            name: song.name,
-                            album: album.name,
-                            artist: artist,
-                            id: song.id,
-                            art: albumArt,
-                        }
-                    });
-                    if (req.body.position == "next") {
-                        musicModule.queue = newTracks.concat(musicModule.queue);
+            musicModule.trySources(
+                function(source, callback) {
+                    source.getSong(
+                        req.body.song,
+                        req.body.album,
+                        req.body.artist,
+                        callback
+                    );
+                },
+                function(err, result) {
+                    if (err) {
+                        musicModule.lastMessage = err;
+                    } else if (!result) {
+                        musicModule.lastMessage = "No results given";
+                    } else if (req.body.position == "next") {
+                        musicModule.queue.unshift(result);
                     } else {
-                        musicModule.queue = musicModule.queue.concat(newTracks);
+                        musicModule.queue.push(result);
                     }
                     response.redirect("/music");
-                });
-            });
+                }
+            );
+        } else if (req.body.album) {
+            musicModule.trySources(
+                function(source, callback) {
+                    source.getAlbum(
+                        req.body.album,
+                        req.body.artist,
+                        callback
+                    );
+                },
+                function(err, album) {
+                    if (err) {
+                        musicModule.lastMessage = err;
+                    } else if (!album) {
+                        musicModule.lastMessage = "No results given";
+                    } else if (req.body.position == "next") {
+                        musicModule.queue = album.concat(musicModule.queue);
+                    } else {
+                        musicModule.queue = musicModule.queue.concat(album);
+                    }
+                    response.redirect("/music");
+                }
+            );
         } else {
             musicModule.lastMessage = "Add more detail!";
             response.redirect("/music");
@@ -121,70 +120,18 @@ module.exports = function(pluto) {
         } while (!selectedUser.artists);
         console.log(selectedUser.name + "'s choice");
         var selectedArtist = selectedUser.artists[Math.floor(Math.random()*selectedUser.artists.length)];
-        pluto.request("https://api.spotify.com/v1/search?q=" +
-            encodeURIComponent(selectedArtist) + "&type=artist",
-            function(res)
-        {
-            if (res.status != 200) {
-                musicModule.lastMessage = "An error occurred: response " + res.status;
-                response.redirect("/music");
-                return;
+        pluto.modules.spotify.randomFromArtist(selectedArtist, function(err, nextTrack) {
+            if (err) {
+                musicModule.lastMessage = err;
+            } else if (!nextTrack) {
+                musicModule.lastMessage = "No results given";
+            } else if (req.params.position == "next") {
+                musicModule.queue.unshift(nextTrack);
+            } else {
+                musicModule.queue.push(nextTrack);
             }
-            if (!res.body.artists || !res.body.artists.items || res.body.artists.items.length == 0) {
-                musicModule.lastMessage = "Sorry, no results were found.";
-                response.redirect("/music");
-                return;
-            }
-            var artist = res.body.artists.items[0];
-            console.log("Selected artist " + artist.name);
-            pluto.request("https://api.spotify.com/v1/artists/" + artist.id + "/albums", function(res) {
-                if (res.status != 200) {
-                    musicModule.lastMessage = "An error occurred: response " + res.status;
-                    response.redirect("/music");
-                    return;
-                }
-                if (!res.body.items || res.body.items.length == 0) {
-                    musicModule.lastMessage = "Sorry, no results were found.";
-                    response.redirect("/music");
-                    return;
-                }
-                var albums = res.body.items;
-                var selectedAlbum = albums[Math.floor(Math.random()*albums.length)];
-                var albumArt = selectedAlbum.images && selectedAlbum.images[1] ? selectedAlbum.images[1].url : "";
-                console.log("Selected album " + selectedAlbum.name);
-                pluto.request("https://api.spotify.com/v1/albums/" + selectedAlbum.id + "/tracks", function(res) {
-                    if (res.status != 200) {
-                        musicModule.lastMessage = "An error occurred: response " + res.status;
-                        response.redirect("/music");
-                        return;
-                    }
-                    if (!res.body.items || res.body.items.length == 0) {
-                        musicModule.lastMessage = "Sorry, no results were found.";
-                        response.redirect("/music");
-                        return;
-                    }
-
-                    var songs = res.body.items;
-                    var selectedSong = songs[Math.floor(Math.random()*songs.length)];
-                    console.log("Selected song " + selectedSong.name);
-                    var nextTrack = {
-                        name: selectedSong.name,
-                        album: selectedAlbum.name,
-                        artist: selectedArtist,
-                        id: selectedSong.id,
-                        art: albumArt,
-                        choice: selectedUser.name
-                    };
-                    if (req.params.position == "next") {
-                        musicModule.queue.unshift(nextTrack);
-                    } else {
-                        musicModule.queue.push(nextTrack);
-                    }
-                    musicModule.queue.push();
-                    response.redirect("/music");
-                });
-            });
-        });
+            response.redirect("/music");
+        })
     });
 
     pluto.addListener("player::download_error", function(err) {

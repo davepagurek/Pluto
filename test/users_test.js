@@ -11,7 +11,7 @@ describe("users", function(){
             testData: {}
         });
         var usersModule = require("../plugins/users.js")(pluto);
-        pluto.addModule(usersModule);
+        pluto.addModule("users", usersModule);
         pluto.listen();
 
         request(pluto.app)
@@ -44,7 +44,7 @@ describe("users", function(){
             testData: {}
         });
         var usersModule = require("../plugins/users.js")(pluto);
-        pluto.addModule(usersModule);
+        pluto.addModule("users", usersModule);
         pluto.listen();
 
         request(pluto.app)
@@ -74,7 +74,7 @@ describe("users", function(){
             testData: {}
         });
         var usersModule = require("../plugins/users.js")(pluto);
-        pluto.addModule(usersModule);
+        pluto.addModule("users", usersModule);
         pluto.listen();
 
         request(pluto.app)
@@ -116,7 +116,7 @@ describe("users", function(){
             }
         });
         var usersModule = require("../plugins/users.js")(pluto);
-        pluto.addModule(usersModule);
+        pluto.addModule("users", usersModule);
         pluto.listen();
 
         request(pluto.app)
@@ -149,7 +149,7 @@ describe("users", function(){
             }
         });
         var usersModule = require("../plugins/users.js")(pluto);
-        pluto.addModule(usersModule);
+        pluto.addModule("users", usersModule);
         pluto.listen();
 
         request(pluto.app)

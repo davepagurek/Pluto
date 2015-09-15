@@ -41,7 +41,7 @@ describe("player", function(){
             }
         });
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 
@@ -71,7 +71,7 @@ describe("player", function(){
             }
         });
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 
@@ -95,7 +95,7 @@ describe("player", function(){
             }
         });
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 
@@ -124,7 +124,7 @@ describe("player", function(){
             }
         });
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 
@@ -161,7 +161,7 @@ describe("player", function(){
         });
 
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 
@@ -211,7 +211,7 @@ describe("player", function(){
         });
 
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 
@@ -260,7 +260,7 @@ describe("player", function(){
         });
 
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 
@@ -314,7 +314,7 @@ describe("player", function(){
         });
 
         var player = require("../plugins/player.js")(pluto);
-        pluto.addModule(player);
+        pluto.addModule("player", player);
         pluto.listen();
         var songs = pluto.getStorage("songs");
 

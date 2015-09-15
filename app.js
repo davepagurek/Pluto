@@ -4,40 +4,47 @@ var pluto = require("./Pluto/pluto.js")({
 
 //Keeps track of if users are IN or OUT by.
 //listening for GET requests to /user/io
-pluto.addModule(require("./plugins/users.js")(pluto));
+pluto.addModule("users", require("./plugins/users.js")(pluto));
+
+
+
+
+
+//Use Spotify as a source for music info
+pluto.addModule("spotify", require("./plugins/spotify.js")(pluto));
 
 //Makes a playlist based on user recommended artists
-pluto.addModule(require("./plugins/music.js")(pluto));
+pluto.addModule("music", require("./plugins/music.js")(pluto));
 
-pluto.addModule(require("./plugins/news_ticker.js")(pluto));
+
+
+
+pluto.addModule("newsTicker", require("./plugins/news_ticker.js")(pluto));
 
 //Outputs "Hello, <username>!" in the console
 //when a new user enters
-pluto.addModule(require("./plugins/welcome.js")(pluto));
+pluto.addModule("welcome", require("./plugins/welcome.js")(pluto));
 
 //Keeps track of how many awesomepoints people have
-pluto.addModule(require("./plugins/awesomepoints.js")(pluto));
+pluto.addModule("awesomepoints", require("./plugins/awesomepoints.js")(pluto));
 
 //Gives out awesomepoints for GitHub streaks
-pluto.addModule(require("./plugins/github.js")(pluto));
+pluto.addModule("github", require("./plugins/github.js")(pluto));
 
 //Allows users to vote to give points
-pluto.addModule(require("./plugins/vote.js")(pluto));
+pluto.addModule("vote", require("./plugins/vote.js")(pluto));
 
 //Shows a dashboard for users
-pluto.addModule(require("./plugins/display.js")(pluto));
-
-//Play music with Spotify
-//pluto.addModule(require("./plugins/spotify.js")(pluto));
+pluto.addModule("display", require("./plugins/display.js")(pluto));
 
 //Play music with mplayer
-pluto.addModule(require("./plugins/player.js")(pluto));
+pluto.addModule("player", require("./plugins/player.js")(pluto));
 
 //Open a trello board
-pluto.addModule(require("./plugins/trellohandler.js")(pluto));
+pluto.addModule("trello", require("./plugins/trellohandler.js")(pluto));
 
 //Get music downloads from Muzik
-pluto.addModule(require("./plugins/muzikdriver.js")(pluto));
+pluto.addModule("muzikDriver", require("./plugins/muzikdriver.js")(pluto));
 
 
 pluto.listen(process.env.PORT || 3000);

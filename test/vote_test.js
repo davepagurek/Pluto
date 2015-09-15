@@ -16,7 +16,7 @@ describe("vote", function() {
             }
         });
         var voteModule = require("../plugins/vote.js")(pluto);
-        pluto.addModule(voteModule);
+        pluto.addModule("vote", voteModule);
         pluto.listen();
 
         voteModule.currentVote = {
@@ -44,7 +44,7 @@ describe("vote", function() {
             }
         });
         var voteModule = require("../plugins/vote.js")(pluto);
-        pluto.addModule(voteModule);
+        pluto.addModule("vote", voteModule);
         pluto.listen();
 
         voteModule.currentVote = {
@@ -72,7 +72,7 @@ describe("vote", function() {
             }
         });
         var voteModule = require("../plugins/vote.js")(pluto);
-        pluto.addModule(voteModule);
+        pluto.addModule("vote", voteModule);
         pluto.listen();
 
         voteModule.currentVote = {
@@ -100,7 +100,7 @@ describe("vote", function() {
             }
         });
         var voteModule = require("../plugins/vote.js")(pluto);
-        pluto.addModule(voteModule);
+        pluto.addModule("vote", voteModule);
         pluto.listen();
 
         voteModule.currentVote = {
@@ -128,7 +128,7 @@ describe("vote", function() {
             }
         });
         var voteModule = require("../plugins/vote.js")(pluto);
-        pluto.addModule(voteModule);
+        pluto.addModule("vote", voteModule);
         pluto.listen();
 
         voteModule.currentVote = {

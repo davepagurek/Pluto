@@ -6,7 +6,8 @@ var lastSongResponse = null;
 var songTimer = null;
 var songProgressContainer = document.getElementById("song_progress_container");
 var updateProgressFromServer = function() {
-    ajax("GET", "/music/progress", function(response) {
+    ajax("GET", "/music/progress", function(err, response) {
+        if (err) return console.error(err);
         if (response == lastSongResponse) return;
 
         if (response == "{}") {
