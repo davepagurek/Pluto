@@ -1,4 +1,4 @@
-#Pluto [![Build Status](https://travis-ci.org/pahgawk/Pluto.svg?branch=master)](https://travis-ci.org/pahgawk/Pluto)
+#Pluto [![Build Status](https://travis-ci.org/davepagurek/Pluto.svg?branch=master)](https://travis-ci.org/pahgawk/Pluto)
 
 ![Pluto](https://raw.githubusercontent.com/pahgawk/Pluto/a826a991dda8d84eaa80be1155b0f0f6b685e851/public/images/pluto-small.png)
 
