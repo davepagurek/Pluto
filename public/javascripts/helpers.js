@@ -3,13 +3,11 @@ function ajax(method, url, callback) {
 
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
-           if(xmlhttp.status == 200){
-               if (callback) callback(xmlhttp.responseText);
-           } else if(xmlhttp.status == 400) {
-               console.error('There was an error 400');
-           } else {
-               console.error('something else other than 200 was returned');
-           }
+            if(xmlhttp.status == 200){
+                if (callback) callback(null, xmlhttp.responseText);
+            } else {
+                callback("Request returned status " + xmlhttp.status, null);
+            }
         }
     }
 
@@ -22,7 +20,8 @@ function autoUpdate(id, url, interval) {
     if (!container) return;
 
     var update = function() {
-        ajax("GET", url, function(response) {
+        ajax("GET", url, function(err, response) {
+            if (err) return console.error(err);
             container.innerHTML = response;
         });
     }
@@ -40,4 +39,17 @@ function secondsToTime(totalSeconds) {
     if (seconds < 10) {seconds = "0"+seconds;}
     var time    = hours+':'+minutes+':'+seconds;
     return time;
+}
+
+function subFormButton(method, url, text, className) {
+    var button = document.createElement("a");
+    button.className = "button";
+    button.className = className;
+    button.addEventListener("click", function() {
+        var form = document.createElement("form");
+        form.method = method;
+        form.action = url;
+        form.submit();
+    });
+    return button;
 }

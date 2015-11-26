@@ -6,14 +6,14 @@ describe("awesomepoints", function(){
             testData: {
                 users: {
                     "test": {
-                        id: "test",
+                        name: "test",
                         points: 5
                     }
                 }
             }
         });
         var awesomepointsModule = require("../plugins/awesomepoints.js")(pluto);
-        pluto.addModule(awesomepointsModule);
+        pluto.addModule("awesomepoints", awesomepointsModule);
         pluto.listen();
         pluto.emitEvent("points::awardTo", pluto.getStorage("users")["test"], 5)
         assert.equal(pluto.getStorage("users")["test"].points, 10);
@@ -24,13 +24,13 @@ describe("awesomepoints", function(){
             testData: {
                 users: {
                     "test": {
-                        id: "test"
+                        name: "test"
                     }
                 }
             }
         });
         var awesomepointsModule = require("../plugins/awesomepoints.js")(pluto);
-        pluto.addModule(awesomepointsModule);
+        pluto.addModule("awesomepoints", awesomepointsModule);
         pluto.listen();
         pluto.emitEvent("points::awardTo", pluto.getStorage("users")["test"], 5)
         assert.equal(pluto.getStorage("users")["test"].points, 5);
