@@ -194,3 +194,7 @@ vim gmusicproxy.cfg
 ```
 
 On windows, download and install the binaries from http://downloads.sourceforge.net/e-guidedog/festival-2.1.1-win.7z specifically to the directory `C:\festival` and then add `C:\festival\bin` to your $PATH.
+
+<h2>Troubleshooting</h2>
+
+If GMusicProxy is not initializing properly, run command `GMusicProxy -c gmusicproxy.cfg`. If there is an error `pkg_resources.ContextualVersionConflict`, run `pip freeze` to determine if package versions satisfy the requirements. If not run `pip install <package name> --upgrade`
