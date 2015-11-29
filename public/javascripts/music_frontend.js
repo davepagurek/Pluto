@@ -6,7 +6,7 @@ var lastSongResponse = null;
 var songTimer = null;
 var songProgressContainer = document.getElementById("song_progress_container");
 var updateProgressFromServer = function() {
-    ajax("GET", "/music/progress", function(err, response) {
+    ajax("GET", "/music/progress/" + (window.currentID || "none"), function(err, response) {
         if (err) return console.error(err);
         if (response == lastSongResponse) return;
 
@@ -14,6 +14,8 @@ var updateProgressFromServer = function() {
             songProgressContainer.innerHTML = "";
             clearInterval(songTimer);
             songTimer = null;
+        } else if (response == '{"reload": true}') {
+            document.location.reload(true);
         } else {
             progress = JSON.parse(response, songTimer);
             currentTime = progress.current;
@@ -21,7 +23,7 @@ var updateProgressFromServer = function() {
             if (!songTimer && progress.playing) {
                 songTimer = setInterval(function() {
                     currentTime++;
-                    songProgressContainer.innerHTML = "" + secondsToTime(currentTime) + " / " + secondsToTime(totalTime);
+                    songProgressContainer.innerHTML = "" + secondsToTime(currentTime) + " / " + (totalTime == "unknown" ? "unknown" : secondsToTime(totalTime));
                 }, 1000);
             } else if (songTimer && !progress.playing) {
                 clearInterval(songTimer);

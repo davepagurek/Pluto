@@ -48,13 +48,19 @@ module.exports = function(pluto) {
         musicModule.progress = data;
         musicModule.downloading = false;
     });
-    pluto.get("/music/progress", function(req, res) {
+    pluto.get("/music/progress/:id", function(req, res) {
         if (musicModule.lastPlaying && musicModule.progress) {
-            res.json({
-                total: musicModule.progress.total,
-                current: musicModule.progress.current,
-                playing: !musicModule.paused
-            });
+            if (musicModule.lastPlaying.id != req.params.id) {
+                res.send('{"reload": true}');
+            } else {
+                res.json({
+                    total: musicModule.progress.total,
+                    current: musicModule.progress.current,
+                    playing: !musicModule.paused
+                });
+            }
+        } else if (!musicModule.downloading && req.params.id != "none") {
+          res.send('{"reload": true}');
         } else {
             res.json({});
         }
@@ -131,7 +137,7 @@ module.exports = function(pluto) {
                 musicModule.queue.push(nextTrack);
             }
             response.redirect("/music");
-        })
+        });
     });
 
     pluto.addListener("player::download_error", function(err) {
@@ -141,6 +147,7 @@ module.exports = function(pluto) {
 
     pluto.post("/music/play", function(req, res) {
         if (musicModule.downloading) {
+            console.log("Can't play, music is downloading!");
             // Do nothing when waiting for download
         } else if (musicModule.paused) {
             musicModule.paused = false;
@@ -159,6 +166,7 @@ module.exports = function(pluto) {
 
     pluto.post("/music/pause", function(req, res) {
         if (musicModule.downloading) {
+            console.log("Can't pause, music is downloading!");
             // Do nothing when waiting for download
         } else if (musicModule.lastPlaying) {
             musicModule.paused = true;

@@ -13,13 +13,21 @@ module.exports = function(pluto) {
                 return callback("Sorry, no results were found.", null);
             }
             var song = res.body.tracks.items[0];
-            callback(null, {
-                name: song.name,
-                album: song.album.name,
-                artist: song.artists[0].name,
-                id: song.id,
-                art: song.album.images && song.album.images[1] ? song.album.images[1].url : ""
-            });
+
+            pluto.request("https://api.spotify.com/v1/tracks/" + song.id, function(res) {
+                if (res.status != 200) {
+                    return callback("An error occurred: response " + res.status, null);
+                }
+
+                callback(null, {
+                    name: res.body.name,
+                    album: res.body.album.name,
+                    artist: res.body.artists[0].name,
+                    id: res.body.id,
+                    runtime: Math.round(res.body.duration_ms/1000),
+                    art: res.body.album.images && res.body.album.images[1] ? res.body.album.images[1].url : ""
+                });
+            }); 
         });
     };
 
@@ -52,7 +60,8 @@ module.exports = function(pluto) {
                         artist: artist,
                         id: song.id,
                         art: albumArt,
-                    }
+                        runtime: Math.round(song.duration_ms/1000)
+                    };
                 }));
             });
         });
@@ -99,6 +108,7 @@ module.exports = function(pluto) {
                         artist: selectedArtist,
                         id: selectedSong.id,
                         art: albumArt,
+                        runtime: Math.round(selectedSong.duration_ms/1000),
                         choice: selectedUser.name
                     };
                     if (req.params.position == "next") {

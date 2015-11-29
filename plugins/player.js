@@ -31,7 +31,7 @@ module.exports = function(pluto) {
         console.log("got song ", song);
         mplayer = spawn( 'mplayer', [ '-slave', songs[song.id].url] );
         mplayer.on('exit', function (response) {
-            mplayer = null;
+            if (!sentStop) mplayer = null;
             if (response == 0) {
                 console.log("Finished playing");
                 if (sentStop) {
@@ -58,12 +58,11 @@ module.exports = function(pluto) {
         mplayer.stdout.on('data', function (data) {
             if (sentStop) return;
             data = "" + data;
-            console.log(data);
-            var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([-\d\.]+) \([\w\d\.:]+\)/.exec(data);
+            var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([\-\d\.]+) \([\w\d\.:]+\)/.exec(data);
             if (progressMatch) {
                 songProgress = {
                     current: parseInt(progressMatch[1]),
-                    total: parseInt(progressMatch[2])
+                    total: /unknown/.exec(data) ? (song.runtime || "unknown") : parseInt(progressMatch[2])
                 };
                 pluto.emitEvent("player::progress", songProgress);
                 return;
@@ -120,6 +119,7 @@ module.exports = function(pluto) {
             }
         } else if (pluto.modules.gpm) {
             songs[song.id] = pluto.modules.gpm.addURLTo(songs[song.id], song);
+            downloading = null;
             pluto.emitEvent("music::play", song);
         } else {
             console.log("getting song urls");
@@ -196,6 +196,7 @@ module.exports = function(pluto) {
         sentStop = true;
         mplayer.stdin.write("stop\n");
         mplayer.stdin.write("quit\n");
+        mplayer = null;
     });
 
 
@@ -210,4 +211,4 @@ module.exports = function(pluto) {
     });
 
     return player;
-}
+};
