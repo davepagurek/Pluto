@@ -33,7 +33,7 @@ var updateProgressFromServer = function() {
 
         lastSongResponse = response;
     });
-}
+};
 
 if (songProgressContainer) {
     setInterval(updateProgressFromServer, 10000);

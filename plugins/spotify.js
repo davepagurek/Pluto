@@ -31,6 +31,25 @@ module.exports = function(pluto) {
         });
     };
 
+    // Obtain song object from song ID
+
+    spotify.getSongFromID = function (id, callback) {
+        pluto.request("https://api.spotify.com/v1/tracks/" + id, function(res) {
+            if (res.status != 200) {
+                return callback("An error occurred: response " + res.status, null);
+            }
+
+            callback(null, {
+                name: res.body.name,
+                album: res.body.album.name,
+                artist: res.body.artists[0].name,
+                id: res.body.id,
+                runtime: Math.round(res.body.duration_ms/1000),
+                art: res.body.album.images && res.body.album.images[1] ? res.body.album.images[1].url : ""
+            });
+        });
+    };
+
     spotify.getAlbum = function(targetAlbum, targetArtist, callback) {
         var searchTerm = (targetArtist ? (encodeURIComponent(targetArtist) + " ") : "") +
             encodeURIComponent(targetAlbum);

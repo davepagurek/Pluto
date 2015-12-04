@@ -1,5 +1,7 @@
 module.exports = function(pluto) {
     var async = require("async");
+    // include module to get spotify playlist information
+    var spotifyData = require("./spotify-data.js");
 
     var data = pluto.getStorage("users");
     var title = "Music Player";
@@ -114,6 +116,67 @@ module.exports = function(pluto) {
             );
         } else {
             musicModule.lastMessage = "Add more detail!";
+            response.redirect("/music");
+        }
+    });
+
+// Adding functionality to add a Spotify playlist
+
+    pluto.post("/music/addPlaylist", function(req, response) {
+        // Verify that user_id and playlist_id are set before searching
+        if (req.body.user_id && req.body.playlist_id) {
+            // Call method to obtain playlist information
+            spotifyData.playlist(req.body.user_id, req.body.playlist_id, function(err, playlist) {
+                //console.log(playlist);
+                if (err) {
+                    musicModule.lastMessage = err;
+                    response.redirect("/music");
+                } else if (!playlist) {
+                    musicModule.lastMessage = "No songs in playlist";
+                    response.redirect("/music");
+                } else {
+                    var songs = [];
+                    async.whilst(
+                        function () {
+                            console.log(playlist.playlist.tracks.length)
+                            return playlist.playlist.tracks.length > 0;
+                        },
+                        function (callback) {
+                            var track = playlist.playlist.tracks.shift();
+                            //console.log(track.href.substr(13));
+                            // While playlist has songs left, obtain song object and push it onto songs array
+                            pluto.modules.spotify.getSongFromID(track.href.substr(14), function(err, result) {
+                                //console.log(result);
+                                if (err) {
+                                    callback(err);
+                                } else if (!result) {
+                                    callback(new Error ("No results given for " + track.name));
+                                } else if (req.body.position == "next") {
+                                    songs.push(result);
+                                    callback(null);
+                                }
+                            });
+
+                        },
+                        // Error handler + push songs array onto queue
+                        function (err) {
+                            if (err) { musicModule.lastMessage = err;}
+                            else {
+                                if (req.body.position == "next") {
+                                    // Append playlist immediately after
+                                    musicModule.queue = songs.concat(musicModule.queue);
+                                } else {
+                                    // Append playlist to the end
+                                    musicModule.queue = musicModule.queue.concat(songs);
+                                }
+                            }
+                            response.redirect("/music");
+                        }
+                    );
+                }
+            });
+        } else {
+            musicModule.lastMessage = "Please include user ID as well as playlist ID!";
             response.redirect("/music");
         }
     });

@@ -20,7 +20,7 @@ module.exports = function(pluto) {
 
     player.handleBadSong = function(song, url) {
         console.log("Can't play file");
-        rm(songs[song.id].url);
+        if (!song.streaming) rm(songs[song.id].url);
         delete songs[song.id].url;
         if (url) songs[song.id].ignore.push(url);
         badSong = true;
@@ -58,6 +58,7 @@ module.exports = function(pluto) {
         mplayer.stdout.on('data', function (data) {
             if (sentStop) return;
             data = "" + data;
+            console.log(data);
             var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([\-\d\.]+) \([\w\d\.:]+\)/.exec(data);
             if (progressMatch) {
                 songProgress = {
