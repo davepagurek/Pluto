@@ -44,49 +44,63 @@
   {{button "POST" "/music/shuffle/next" "Play random song next" ""}}
   {{button "POST" "/music/shuffle/end" "Add random song to end" ""}}
 </p>
-<form method="POST" action="/music/add">
-  <div class="value">
-    <label>Artist</label>
-    <input name="artist" type="text" placeholder="Eminem" />
-  </div>
-  <div class="value">
-    <label>Album</label>
-    <input name="album" type="text" placeholder="The Marshall Mathers LP" />
-  </div>
-  <div class="value">
-    <label>Song</label>
-    <input name="song" type="text" placeholder="The Real Slim Shady" />
-  </div>
-  <div class="value">
-    <label>Play next</label>
-    <input type="radio" name="position" value="next" checked />
-  </div>
-  <div class="value">
-    <label>Add to end</label>
-    <input type="radio" name="position" value="end" />
-  </div>
-  <input type="submit" value="Add to Queue" />
-</form>
 
-<form method="POST" action="/music/addPlaylist">
-  <div class="value">
-    <label>User ID</label>
-    <input name="user_id" type="text" placeholder="1234567890" />
+<div class = "adding_tabs">
+  <ul>
+    <li><a href="#tab1" class="active">Add a song</a></li>
+    <li><a href="#tab2">Add a playlist</a></li>
+  </ul>
+  <div id="tabs">
+    <div id="tab1">
+      <form method="POST" action="/music/add">
+        <div class="value">
+          <label>Artist</label>
+          <input name="artist" type="text" placeholder="Eminem" />
+        </div>
+        <div class="value">
+          <label>Album</label>
+          <input name="album" type="text" placeholder="The Marshall Mathers LP" />
+        </div>
+        <div class="value">
+          <label>Song</label>
+          <input name="song" type="text" placeholder="The Real Slim Shady" />
+        </div>
+        <div class="value">
+          <label>Play next</label>
+          <input type="radio" name="position" value="next" checked />
+        </div>
+        <div class="value">
+          <label>Add to end</label>
+          <input type="radio" name="position" value="end" />
+        </div>
+        <input type="submit" value="Add to Queue" />
+      </form>
+    </div>
+
+    <div id="tab2">
+      <form method="POST" action="/music/addPlaylist">
+        <div class="value">
+          <label>User ID</label>
+          <input name="user_id" type="text" placeholder="1234567890" />
+        </div>
+        <div class="value">
+          <label>Playlist ID</label>
+          <input name="playlist_id" type="text" placeholder="1234567890" />
+        </div>
+        <div class="value">
+          <label>Play next</label>
+          <input type="radio" name="position" value="next" checked />
+        </div>
+        <div class="value">
+          <label>Add to end</label>
+          <input type="radio" name="position" value="end" />
+        </div>
+        <input type="submit" value="Add to Queue" />
+      </form>
+    </div>
   </div>
-  <div class="value">
-    <label>Playlist ID</label>
-    <input name="playlist_id" type="text" placeholder="1234567890" />
-  </div>
-  <div class="value">
-    <label>Play next</label>
-    <input type="radio" name="position" value="next" checked />
-  </div>
-  <div class="value">
-    <label>Add to end</label>
-    <input type="radio" name="position" value="end" />
-  </div>
-  <input type="submit" value="Add to Queue" />
-</form>
+
+</div>
 
 <h3>Queue</h3>
 <div class="song_list">
