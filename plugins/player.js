@@ -20,7 +20,7 @@ module.exports = function(pluto) {
 
     player.handleBadSong = function(song, url) {
         console.log("Can't play file");
-        rm(songs[song.id].url);
+        if (!song.streaming) rm(songs[song.id].url);
         delete songs[song.id].url;
         if (url) songs[song.id].ignore.push(url);
         badSong = true;
@@ -29,9 +29,9 @@ module.exports = function(pluto) {
 
     player.playSong = function(song, url) {
         console.log("got song ", song);
-        mplayer = spawn( 'mplayer', [ '-slave', songs[song.id].url ] );
+        mplayer = spawn( 'mplayer', [ '-slave', songs[song.id].url] );
         mplayer.on('exit', function (response) {
-            mplayer = null;
+            if (!sentStop) mplayer = null;
             if (response == 0) {
                 console.log("Finished playing");
                 if (sentStop) {
@@ -54,14 +54,16 @@ module.exports = function(pluto) {
 
         //Output format:
         //13.7 (13.7) of 284.0 (04:44.0)
+        //8.2 (08.2) of -1.3 (unknown)  0.5% 45%
         mplayer.stdout.on('data', function (data) {
             if (sentStop) return;
             data = "" + data;
-            var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([\d\.]+) \([\d\.:]+\)/.exec(data);
+            console.log(data);
+            var progressMatch = /([\d\.:]+) \([\d\.:]+\) of ([\-\d\.]+) \([\w\d\.:]+\)/.exec(data);
             if (progressMatch) {
                 songProgress = {
                     current: parseInt(progressMatch[1]),
-                    total: parseInt(progressMatch[2])
+                    total: /unknown/.exec(data) ? (song.runtime || "unknown") : parseInt(progressMatch[2])
                 };
                 pluto.emitEvent("player::progress", songProgress);
                 return;
@@ -104,11 +106,11 @@ module.exports = function(pluto) {
         downloadError = null;
         downloadPercent = null;
         downloading = song;
-        attempts++;
+        attempts++; 
         songs[song.id] = songs[song.id] || {ignore: []};
         songs[song.id].lastPlayed = Date.now();
         if (songs[song.id].url) {
-            if (test("-f", songs[song.id].url)) {
+            if (song.streaming || test("-f", songs[song.id].url)) {
                 console.log("Song file exists");
                 downloading = null;
                 player.playSong(song, null);
@@ -116,6 +118,10 @@ module.exports = function(pluto) {
                 delete songs[song.id].url;
                 pluto.emitEvent("music::play", song);
             }
+        } else if (pluto.modules.gpm) {
+            songs[song.id] = pluto.modules.gpm.addURLTo(songs[song.id], song);
+            downloading = null;
+            pluto.emitEvent("music::play", song);
         } else {
             console.log("getting song urls");
             pluto.emitEvent("muzik::get_link", song, songs[song.id].ignore, function(err,url) {
@@ -191,6 +197,7 @@ module.exports = function(pluto) {
         sentStop = true;
         mplayer.stdin.write("stop\n");
         mplayer.stdin.write("quit\n");
+        mplayer = null;
     });
 
 
@@ -205,4 +212,4 @@ module.exports = function(pluto) {
     });
 
     return player;
-}
+};

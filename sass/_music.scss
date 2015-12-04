@@ -55,3 +55,59 @@
         font-style:italic;
     }
 }
+
+/* Adding style for tabs to add songs individually or by playlist */
+
+.adding_tabs {
+    overflow: hidden;
+    clear: both;
+    font-size: 0;
+    ul {
+        list-style-type: none;
+        bottom: -1px;
+        position: relative;
+    }
+    li {
+        display: inline-block;
+        margin-bottom: -10px;
+    }
+
+    a {
+        display: block;
+        padding: 5px 10px;
+        color: #000;
+        text-decoration: none;
+        margin: 0 4px;
+        font: 13px/18px verdana, arial, sans-serif;
+        box-shadow: 0 4px 10px $color_container_shadow;
+        border-radius: 4px 4px 0 0;
+        background: #FFFFFF;
+    }
+
+    a.active {
+        margin-bottom: -10px;
+        background: $color_background;
+    }
+
+    #tabs {
+        display: flex;
+        margin: 10px;
+        margin-top: 8px !important;
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 4px 10px $color_container_shadow;
+    }
+    #tabs > div {
+        font-size: 13px;
+        background-color: #fff;
+        overflow: hidden;
+        width: 0;
+        height: 340px;
+        transition: all 0.5s linear;
+        border-top: 4px solid $color_background;
+        border-radius: 4px 4px 0 0;
+    }
+    #tabs form {
+        box-shadow: none !important;
+    }
+}

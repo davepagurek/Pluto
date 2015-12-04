@@ -172,13 +172,29 @@ Tests can be run with: `npm test`
 
 
 <h2>Dependencies</h2>
-Text-to-speech requires Festival to work. On linux, run:
+Text-to-speech requires Festival or espeak to work. On linux, run:
 ```
 apt-get install festival
+apt-get install espeak
 ```
 MPlayer to play song links. Run:
 ```
 apt-get install mplayer2
 ```
+Google Play Music requires <a href="https://github.com/diraimondo/gmusicproxy">gmusicproxy</a> installed and valid credentials in the config file.
+```
+sudo apt-get install python-pip
+git clone https://github.com/diraimondo/gmusicproxy.git
+cd gmusicproxy
+sudo pip install -r requirements.txt
+
+cd ../Pluto
+mv gmusicproxy-example.cfg gmusicproxy.cfg
+vim gmusicproxy.cfg
+```
 
 On windows, download and install the binaries from http://downloads.sourceforge.net/e-guidedog/festival-2.1.1-win.7z specifically to the directory `C:\festival` and then add `C:\festival\bin` to your $PATH.
+
+<h2>Troubleshooting</h2>
+
+If GMusicProxy is not initializing properly, run command `GMusicProxy -c gmusicproxy.cfg`. If there is an error `pkg_resources.ContextualVersionConflict`, run `pip freeze` to determine if package versions satisfy the requirements. If not run `pip install <package name> --upgrade`

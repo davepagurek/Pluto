@@ -13,6 +13,9 @@ pluto.addModule("users", require("./plugins/users.js")(pluto));
 //Use Spotify as a source for music info
 pluto.addModule("spotify", require("./plugins/spotify.js")(pluto));
 
+//Use Google Play Music as a source for music info
+pluto.addModule("gpm", require("./plugins/gpm.js")(pluto));
+
 //Makes a playlist based on user recommended artists
 pluto.addModule("music", require("./plugins/music.js")(pluto));
 

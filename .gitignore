@@ -29,3 +29,9 @@ node_modules
 
 # UGH WHY
 .DS_Store
+
+# GPM proxy config
+gmusicproxy.cfg
+
+# IDEA
+.idea/

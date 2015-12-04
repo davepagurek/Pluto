@@ -1,5 +1,7 @@
 module.exports = function(pluto) {
     var async = require("async");
+    // include module to get spotify playlist information
+    var spotifyData = require("./spotify-data.js");
 
     var data = pluto.getStorage("users");
     var title = "Music Player";
@@ -48,13 +50,19 @@ module.exports = function(pluto) {
         musicModule.progress = data;
         musicModule.downloading = false;
     });
-    pluto.get("/music/progress", function(req, res) {
+    pluto.get("/music/progress/:id", function(req, res) {
         if (musicModule.lastPlaying && musicModule.progress) {
-            res.json({
-                total: musicModule.progress.total,
-                current: musicModule.progress.current,
-                playing: !musicModule.paused
-            });
+            if (musicModule.lastPlaying.id != req.params.id) {
+                res.send('{"reload": true}');
+            } else {
+                res.json({
+                    total: musicModule.progress.total,
+                    current: musicModule.progress.current,
+                    playing: !musicModule.paused
+                });
+            }
+        } else if (!musicModule.downloading && req.params.id != "none") {
+          res.send('{"reload": true}');
         } else {
             res.json({});
         }
@@ -112,6 +120,67 @@ module.exports = function(pluto) {
         }
     });
 
+// Adding functionality to add a Spotify playlist
+
+    pluto.post("/music/addPlaylist", function(req, response) {
+        // Verify that user_id and playlist_id are set before searching
+        if (req.body.user_id && req.body.playlist_id) {
+            // Call method to obtain playlist information
+            spotifyData.playlist(req.body.user_id, req.body.playlist_id, function(err, playlist) {
+                //console.log(playlist);
+                if (err) {
+                    musicModule.lastMessage = err;
+                    response.redirect("/music");
+                } else if (!playlist) {
+                    musicModule.lastMessage = "No songs in playlist";
+                    response.redirect("/music");
+                } else {
+                    var songs = [];
+                    async.whilst(
+                        function () {
+                            console.log(playlist.playlist.tracks.length)
+                            return playlist.playlist.tracks.length > 0;
+                        },
+                        function (callback) {
+                            var track = playlist.playlist.tracks.shift();
+                            //console.log(track.href.substr(13));
+                            // While playlist has songs left, obtain song object and push it onto songs array
+                            pluto.modules.spotify.getSongFromID(track.href.substr(14), function(err, result) {
+                                //console.log(result);
+                                if (err) {
+                                    callback(err);
+                                } else if (!result) {
+                                    callback(new Error ("No results given for " + track.name));
+                                } else if (req.body.position == "next") {
+                                    songs.push(result);
+                                    callback(null);
+                                }
+                            });
+
+                        },
+                        // Error handler + push songs array onto queue
+                        function (err) {
+                            if (err) { musicModule.lastMessage = err;}
+                            else {
+                                if (req.body.position == "next") {
+                                    // Append playlist immediately after
+                                    musicModule.queue = songs.concat(musicModule.queue);
+                                } else {
+                                    // Append playlist to the end
+                                    musicModule.queue = musicModule.queue.concat(songs);
+                                }
+                            }
+                            response.redirect("/music");
+                        }
+                    );
+                }
+            });
+        } else {
+            musicModule.lastMessage = "Please include user ID as well as playlist ID!";
+            response.redirect("/music");
+        }
+    });
+
     pluto.post("/music/shuffle/:position", function(req, response) {
         var selectedUser = {};
         var ids = Object.keys(data);
@@ -131,7 +200,7 @@ module.exports = function(pluto) {
                 musicModule.queue.push(nextTrack);
             }
             response.redirect("/music");
-        })
+        });
     });
 
     pluto.addListener("player::download_error", function(err) {
@@ -141,6 +210,7 @@ module.exports = function(pluto) {
 
     pluto.post("/music/play", function(req, res) {
         if (musicModule.downloading) {
+            console.log("Can't play, music is downloading!");
             // Do nothing when waiting for download
         } else if (musicModule.paused) {
             musicModule.paused = false;
@@ -159,6 +229,7 @@ module.exports = function(pluto) {
 
     pluto.post("/music/pause", function(req, res) {
         if (musicModule.downloading) {
+            console.log("Can't pause, music is downloading!");
             // Do nothing when waiting for download
         } else if (musicModule.lastPlaying) {
             musicModule.paused = true;
